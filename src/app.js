@@ -11,7 +11,7 @@ const {
 
 mongoose.connect(DB_PATH);
 app.listen(PORT, () => {
-  console.log(`App is listening on port ${PORT}`);
+  console.log(`App is listening on port ${PORT} in ${NODE_ENV} mode`);
 });
 
 process.on('uncaughtException', (err, origin) => {

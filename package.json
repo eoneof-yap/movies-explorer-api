@@ -1,0 +1,21 @@
+{
+  "name": "movies-explorer-api",
+  "description": "Дипломный проект студента Яндекс Практикума. Бэкенд для одостраничного приложения по поиску фильмов, с возможностью регистрации и авторизации пользователей и хранения списка понравивишихся им фильмов.",
+  "author": "Николай Иванов",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "homepage": "https://github.com/eoneof-yap/movies-explorer-api#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eoneof-yap/movies-explorer-api.git"
+  },
+  "keywords": [
+    "nodejs",
+    "mongodb",
+    "express"
+  ]
+}

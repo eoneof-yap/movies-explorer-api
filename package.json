@@ -22,7 +22,10 @@
     "mongodb",
     "express"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "mongoose": "^6.6.4",
+    "validator": "^13.7.0"
+  },
   "devDependencies": {
     "eslint": "^8.24.0",
     "eslint-config-airbnb-base": "^15.0.0",

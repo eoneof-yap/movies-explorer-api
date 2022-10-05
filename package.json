@@ -10,7 +10,8 @@
     "dev": "set NODE_ENV=development&& set PORT=3001&& nodemon ./src/app.js",
     "debug": "set NODE_ENV=debugging&& set PORT=3001&& nodemon --inspect ./src/app.js",
     "lint": "npx eslint ./src",
-    "lint:fix": "npx eslint ./src --fix"
+    "lint:fix": "npx eslint ./src --fix",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "homepage": "https://github.com/eoneof-yap/movies-explorer-api#readme",
   "repository": {
@@ -31,6 +32,15 @@
     "eslint": "^8.24.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
+    "jest": "^29.1.2",
+    "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.20"
-  }
+  },
+  "jest": {
+    "testEnvironment": "jest-environment-node",
+    "transform": {}
+  },
+  "eslintIgnore": [
+    "*.test.js"
+  ]
 }

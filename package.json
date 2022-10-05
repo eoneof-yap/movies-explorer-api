@@ -6,7 +6,7 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "node ./src/app.js",
     "dev": "set NODE_ENV=development&& set PORT=3001&& nodemon ./src/app.js",
     "debug": "set NODE_ENV=development&& set PORT=3001&& nodemon --inspect ./src/app.js",
     "lint": "npx eslint ./src",

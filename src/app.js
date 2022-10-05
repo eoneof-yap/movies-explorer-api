@@ -11,6 +11,9 @@ const {
 
 const app = express();
 
+app.use(express.json()); // body-parser is bundled with Express >4.16
+app.use(express.urlencoded({ extended: true }));
+
 app.use(routes);
 
 mongoose.connect(DB_PATH);

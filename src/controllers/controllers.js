@@ -1,19 +1,39 @@
-export const getUserInfo = (req, res) => {
-  res.send({ method: req.method, route: '/users/me' });
-};
+export async function getUserInfo(req, res) {
+  try {
+    res.send({ myres: { method: req.method, route: '/users/me' } });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+}
 
-export const updateUserInfo = (req, res) => {
-  res.send({ method: req.method, route: '/users/me' });
-};
+export async function updateUserInfo(req, res) {
+  try {
+    res.send({ method: req.method, route: '/users/me' });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+}
 
-export const getMovieList = (req, res) => {
-  res.send({ method: req.method, route: '/movies' });
-};
+export async function getMovieList(req, res) {
+  try {
+    res.send({ method: req.method, route: '/movies' });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+}
 
-export const updateMovieList = (req, res) => {
-  res.send({ method: req.method, route: '/movies' });
-};
+export async function updateMovieList(req, res) {
+  try {
+    res.send({ method: req.method, route: '/movies' });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+}
 
-export const deleteMovieById = (req, res) => {
-  res.send({ route: '/movies/:id' });
-};
+export async function deleteMovieById(req, res) {
+  try {
+    res.send({ route: '/movies/:id' });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+}

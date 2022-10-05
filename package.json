@@ -4,7 +4,7 @@
   "author": "Николай Иванов",
   "version": "1.0.0",
   "type": "module",
-  "main": "app.js",
+  "main": "./src/app.js",
   "scripts": {
     "start": "node ./src/app.js",
     "dev": "set NODE_ENV=development&& set PORT=3001&& nodemon ./src/app.js",

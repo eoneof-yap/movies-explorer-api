@@ -2,12 +2,16 @@ import process from 'process';
 import express from 'express';
 import mongoose from 'mongoose';
 
+import routes from './routes/routes.js';
+
 const {
   NODE_ENV = 'production', PORT = 3000,
   DB_PATH = 'mongodb://127.0.0.1:27017/moviexdb',
 } = process.env;
 
 const app = express();
+
+app.use(routes);
 
 mongoose.connect(DB_PATH);
 app.listen(PORT, () => {

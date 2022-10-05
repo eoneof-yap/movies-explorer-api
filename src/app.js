@@ -3,7 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 
 const {
-  NODE_ENV = 'development', PORT = 3000,
+  NODE_ENV = 'production', PORT = 3000,
   DB_PATH = 'mongodb://127.0.0.1:27017/moviexdb',
 } = process.env;
 

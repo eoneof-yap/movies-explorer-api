@@ -1,22 +1,54 @@
-import httpMocks  from 'node-mocks-http';
-import { getUserInfo } from './controllers.js';
+import httpMocks from 'node-mocks-http';
+import { describe, test, expect } from '@jest/globals';
 
-describe('getUserInfo', () => {
-    test('Получить данные о пользователе', () => {
-        const req = httpMocks.createRequest({
-            method: 'GET',
-            url: '/users/me'
-        });
+import { getUserInfo, getMovieList } from './controllers.js';
 
-        const res = httpMocks.createResponse();
+describe('Получает данные о пользователе', () => {
+  const res = httpMocks.createResponse();
+  const req = httpMocks.createRequest({
+    method: 'GET',
+    url: '/users/me',
+  });
 
-        getUserInfo(req, res, (err) => {
-            expect(err).toBeFalsy();
-        });
-
-        console.log(res.json());
-
-        expect(res.statusCode).toBe(200);
-        expect.anything()
-        });
+  test('Возвращает статус 200', () => {
+    getUserInfo(req, res, (err) => {
+      expect(err).toBeFalsy();
     });
+
+    expect(res.statusCode).toBe(200);
+  });
+
+  test('Объект пользователя соответствует', () => {
+    getUserInfo(req, res, (err) => {
+      expect(err).toBeFalsy();
+    });
+    const data = res._getData();
+
+    expect(data).toMatchObject({ user: {} });
+  });
+});
+
+describe('Получает список фильмов', () => {
+  const res = httpMocks.createResponse();
+  const req = httpMocks.createRequest({
+    method: 'GET',
+    url: '/movies',
+  });
+
+  test('Возвращает статус 200', () => {
+    getMovieList(req, res, (err) => {
+      expect(err).toBeFalsy();
+    });
+
+    expect(res.statusCode).toBe(200);
+  });
+
+  test('В ответе приходит массив', () => {
+    getMovieList(req, res, (err) => {
+      expect(err).toBeFalsy();
+    });
+    const data = res._getData();
+
+    expect(data).toEqual(expect.arrayContaining([]));
+  });
+});

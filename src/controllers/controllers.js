@@ -1,6 +1,6 @@
 export async function getUserInfo(req, res) {
   try {
-    res.send({ myres: { method: req.method, route: '/users/me' } });
+    res.send({ user: { method: req.method, route: '/users/me' } });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
@@ -16,7 +16,7 @@ export async function updateUserInfo(req, res) {
 
 export async function getMovieList(req, res) {
   try {
-    res.send({ method: req.method, route: '/movies' });
+    res.send([{ movies: req.method, route: '/movies' }]);
   } catch (err) {
     res.status(500).send({ error: err.message });
   }

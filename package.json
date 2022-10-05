@@ -29,6 +29,7 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.1.2",
     "eslint": "^8.24.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
@@ -37,10 +38,8 @@
     "nodemon": "^2.0.20"
   },
   "jest": {
+    "verbose": true,
     "testEnvironment": "jest-environment-node",
     "transform": {}
-  },
-  "eslintIgnore": [
-    "*.test.js"
-  ]
+  }
 }

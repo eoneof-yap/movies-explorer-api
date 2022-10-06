@@ -40,7 +40,12 @@
   },
   "jest": {
     "verbose": true,
-    "testEnvironment": "jest-environment-node",
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.[jt]s?(x)",
+      "**/?(*.)+(spec|test).[jt]s?(x)"
+    ],
+    "forceExit": true,
     "transform": {}
   }
 }

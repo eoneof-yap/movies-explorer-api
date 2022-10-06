@@ -6,7 +6,15 @@ export async function getUserInfo(req, res) {
   }
 }
 
-export async function updateUserInfo(req, res) {
+export async function createUser(req, res) {
+  try {
+    res.send({ method: req.method, route: '/users/me' });
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+}
+
+export async function updateUser(req, res) {
   try {
     res.send({ method: req.method, route: '/users/me' });
   } catch (err) {

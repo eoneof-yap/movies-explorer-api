@@ -2,11 +2,14 @@ import userModel from '../models/userModel.js';
 
 const User = userModel;
 
-export async function createUser(req, res) {
+export async function createUser(req, res, next) {
+  const { name, email, password } = req.body;
   try {
-    res.send({ user: { User, method: req.method, route: '/users/me' } });
+    const user = await User.create({ name, email, password });
+    res.status(201).send(user);
   } catch (err) {
     res.status(500).send({ error: err.message });
+    next(err);
   }
 }
 

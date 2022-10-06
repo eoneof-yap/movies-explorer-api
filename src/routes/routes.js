@@ -2,8 +2,9 @@ import express from 'express';
 
 import { MOVIES_PATH } from '../utils/constants.js';
 import { deleteMovieById, getMovies, createMovie } from '../controllers/controllers.js';
-import userRoute from './userRoute.js';
+
 import authRoute from './authRoute.js';
+import userRoute from './userRoute.js';
 
 const routes = express();
 

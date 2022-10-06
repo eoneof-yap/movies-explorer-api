@@ -1,12 +1,12 @@
-export async function getUserInfo(req, res) {
+export async function getUser(req, res) {
   try {
-    res.send({ myres: { method: req.method, route: '/users/me' } });
+    res.send({ user: { method: req.method, route: '/users/me' } });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 }
 
-export async function updateUserInfo(req, res) {
+export async function createUser(req, res) {
   try {
     res.send({ method: req.method, route: '/users/me' });
   } catch (err) {
@@ -14,15 +14,23 @@ export async function updateUserInfo(req, res) {
   }
 }
 
-export async function getMovieList(req, res) {
+export async function updateUser(req, res) {
   try {
-    res.send({ method: req.method, route: '/movies' });
+    res.send({ method: req.method, route: '/users/me' });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
 }
 
-export async function updateMovieList(req, res) {
+export async function getMovies(req, res) {
+  try {
+    res.send([{ movies: req.method, route: '/movies' }]);
+  } catch (err) {
+    res.status(500).send({ error: err.message });
+  }
+}
+
+export async function updateMovies(req, res) {
   try {
     res.send({ method: req.method, route: '/movies' });
   } catch (err) {

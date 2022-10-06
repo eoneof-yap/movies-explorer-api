@@ -1,17 +1,20 @@
 import express from 'express';
 
-import { USER_PATH, MOVIES_PATH } from '../utils/constants.js';
-import {
-  deleteMovieById, getMovies, getUser, updateMovies, updateUser,
-} from '../controllers/controllers.js';
+import { MOVIES_PATH } from '../utils/constants.js';
+import { deleteMovieById, getMovies, createMovie } from '../controllers/controllers.js';
+import userRoute from './userRoute.js';
+import authRoute from './authRoute.js';
 
 const routes = express();
 
-routes.get(USER_PATH, getUser)
-  .patch(USER_PATH, updateUser);
+routes.use(authRoute);
 
+// TODO: protect with auth
+routes.use(userRoute);
+
+// moviesRoute
 routes.get(MOVIES_PATH, getMovies)
-  .post(MOVIES_PATH, updateMovies)
+  .post(MOVIES_PATH, createMovie)
   .delete(`${MOVIES_PATH}/:id`, deleteMovieById);
 
 export default routes;

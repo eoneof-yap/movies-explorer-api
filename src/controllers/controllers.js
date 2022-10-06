@@ -1,22 +1,7 @@
-export async function getUser(req, res) {
+// moviesController
+export async function createMovie(req, res) {
   try {
-    res.send({ user: { method: req.method, route: '/users/me' } });
-  } catch (err) {
-    res.status(500).send({ error: err.message });
-  }
-}
-
-export async function createUser(req, res) {
-  try {
-    res.send({ method: req.method, route: '/users/me' });
-  } catch (err) {
-    res.status(500).send({ error: err.message });
-  }
-}
-
-export async function updateUser(req, res) {
-  try {
-    res.send({ method: req.method, route: '/users/me' });
+    res.send({ method: req.method, route: '/movies' });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }
@@ -25,14 +10,6 @@ export async function updateUser(req, res) {
 export async function getMovies(req, res) {
   try {
     res.send([{ movies: req.method, route: '/movies' }]);
-  } catch (err) {
-    res.status(500).send({ error: err.message });
-  }
-}
-
-export async function updateMovies(req, res) {
-  try {
-    res.send({ method: req.method, route: '/movies' });
   } catch (err) {
     res.status(500).send({ error: err.message });
   }

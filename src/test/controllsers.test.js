@@ -1,7 +1,8 @@
 import httpMocks from 'node-mocks-http';
 import { describe, test, expect } from '@jest/globals';
 
-import { getUser, getMovies } from '../controllers/controllers.js';
+import { getMovies } from '../controllers/controllers.js';
+import { getUser } from '../controllers/userController.js';
 
 describe('Получает данные о пользователе', () => {
   const res = httpMocks.createResponse();

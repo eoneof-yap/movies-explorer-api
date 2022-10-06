@@ -1,4 +1,4 @@
-export async function getUserInfo(req, res) {
+export async function getUser(req, res) {
   try {
     res.send({ user: { method: req.method, route: '/users/me' } });
   } catch (err) {
@@ -22,7 +22,7 @@ export async function updateUser(req, res) {
   }
 }
 
-export async function getMovieList(req, res) {
+export async function getMovies(req, res) {
   try {
     res.send([{ movies: req.method, route: '/movies' }]);
   } catch (err) {
@@ -30,7 +30,7 @@ export async function getMovieList(req, res) {
   }
 }
 
-export async function updateMovieList(req, res) {
+export async function updateMovies(req, res) {
   try {
     res.send({ method: req.method, route: '/movies' });
   } catch (err) {

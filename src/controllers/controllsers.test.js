@@ -1,7 +1,7 @@
 import httpMocks from 'node-mocks-http';
 import { describe, test, expect } from '@jest/globals';
 
-import { getUserInfo, getMovieList } from './controllers.js';
+import { getUser, getMovies } from './controllers.js';
 
 describe('Получает данные о пользователе', () => {
   const res = httpMocks.createResponse();
@@ -11,7 +11,7 @@ describe('Получает данные о пользователе', () => {
   });
 
   test('Возвращает статус 200', () => {
-    getUserInfo(req, res, (err) => {
+    getUser(req, res, (err) => {
       expect(err).toBeFalsy();
     });
 
@@ -19,7 +19,7 @@ describe('Получает данные о пользователе', () => {
   });
 
   test('Объект пользователя соответствует', () => {
-    getUserInfo(req, res, (err) => {
+    getUser(req, res, (err) => {
       expect(err).toBeFalsy();
     });
     const data = res._getData();
@@ -36,7 +36,7 @@ describe('Получает список фильмов', () => {
   });
 
   test('Возвращает статус 200', () => {
-    getMovieList(req, res, (err) => {
+    getMovies(req, res, (err) => {
       expect(err).toBeFalsy();
     });
 
@@ -44,7 +44,7 @@ describe('Получает список фильмов', () => {
   });
 
   test('В ответе приходит массив', () => {
-    getMovieList(req, res, (err) => {
+    getMovies(req, res, (err) => {
       expect(err).toBeFalsy();
     });
     const data = res._getData();

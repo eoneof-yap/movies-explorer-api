@@ -1,7 +1,8 @@
 import supertest from 'supertest';
 import {
-  describe, test, expect, jest,
+  describe, test, expect, jest, beforeAll, afterAll, afterEach,
 } from '@jest/globals';
+import * as db from '../utils/MongoMemoryServer.js';
 
 import { REGISTER_PATH } from '../utils/constants.js';
 import app from '../app.js';
@@ -16,25 +17,37 @@ const payload = {
 };
 
 describe('POST /signup', () => {
+  beforeAll(async () => {
+    await db.connect();
+  });
+  afterEach(async () => {
+    await db.clearDatabase();
+  });
+  afterAll(async () => {
+    await db.closeDatabase();
+  });
+
   test('Статус 201', async () => {
     const response = await request.post(REGISTER_PATH)
       .send(payload).set('Content-Type', 'application/json');
     const res = response.toJSON();
-    console.log(res);
+    // console.log(res);
     expect(res.status).toBe(201);
   });
 
-  // test('Объект содержит', async (done) => {
-  //   const response = await request.post(REGISTER_PATH).send({
-  //     name: 'test',
-  //     email: 'test@test.com',
-  //     password: 'test123test',
-  //   });
-  //   expect(response.data).toEqual({
-  //     name: expect.any(String),
-  //     email: expect.any(String),
-  //     password: expect.any(String),
-  //   });
-  //   done();
-  // });
+  test('Объект содержит', async () => {
+    const response = await request.post(REGISTER_PATH).send({
+      name: 'test',
+      email: 'test@test.com',
+      password: 'test123test',
+    });
+    const res = response.toJSON();
+    expect(JSON.parse(res.text)).toEqual({
+      name: expect.any(String),
+      email: expect.any(String),
+      password: expect.any(String),
+      _id: expect.any(String),
+      __v: expect.any(Number),
+    });
+  });
 });

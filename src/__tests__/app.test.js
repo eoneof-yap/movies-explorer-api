@@ -1,35 +1,40 @@
 import supertest from 'supertest';
-import { describe, test, expect } from '@jest/globals';
+import {
+  describe, test, expect, jest,
+} from '@jest/globals';
 
 import { REGISTER_PATH } from '../utils/constants.js';
 import app from '../app.js';
 
 const request = supertest(app);
+jest.setTimeout(30000);
 
-describe('POST /users', () => {
-  test('Статус 201', () => {
-    request.post(REGISTER_PATH).send({
-      name: 'test',
-      email: 'test@test.com',
-      password: 'test123test',
-    })
-      .then((response) => {
-        console.log(response);
-        expect(response.statusCode).toBe(201);
-      });
+const payload = {
+  name: 'test',
+  email: 'test@test.com',
+  password: 'test123test',
+};
 
-    // test('Статус 201', () => {
-    //   jest.setTimeout(15000);
-    //   const response = request.post(REGISTER_PATH).send({
-    //     name: 'test',
-    //     email: 'test@test.com',
-    //     password: 'test123test',
-    //   });
-    //   expect(response.body).toEqual({
-    //     name: expect.any(String),
-    //     email: expect.any(String),
-    //     password: expect.any(String),
-    //   });
-    // });
+describe('POST /signup', () => {
+  test('Статус 201', async () => {
+    const response = await request.post(REGISTER_PATH)
+      .send(payload).set('Content-Type', 'application/json');
+    const res = response.toJSON();
+    console.log(res);
+    expect(res.status).toBe(201);
   });
+
+  // test('Объект содержит', async (done) => {
+  //   const response = await request.post(REGISTER_PATH).send({
+  //     name: 'test',
+  //     email: 'test@test.com',
+  //     password: 'test123test',
+  //   });
+  //   expect(response.data).toEqual({
+  //     name: expect.any(String),
+  //     email: expect.any(String),
+  //     password: expect.any(String),
+  //   });
+  //   done();
+  // });
 });

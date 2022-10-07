@@ -2,7 +2,7 @@ import supertest from 'supertest';
 import {
   describe, test, expect, jest, beforeAll, afterAll, afterEach,
 } from '@jest/globals';
-import * as db from '../utils/MongoMemoryServer.js';
+import * as db from '../utils/mongoServer.js';
 
 import { REGISTER_PATH } from '../utils/constants.js';
 import app from '../app.js';

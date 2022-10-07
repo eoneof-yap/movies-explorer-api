@@ -11,7 +11,7 @@
     "debug": "set NODE_ENV=debugging&& set PORT=3001&& nodemon --inspect ./src/server.js",
     "lint": "npx eslint ./src",
     "lint:fix": "npx eslint ./src --fix",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+    "test": "set NODE_ENV=testing&& node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "homepage": "https://github.com/eoneof-yap/movies-explorer-api#readme",
   "repository": {

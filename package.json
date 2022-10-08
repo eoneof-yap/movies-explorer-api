@@ -45,7 +45,8 @@
     "verbose": true,
     "testEnvironment": "node",
     "modulePathIgnorePatterns": [
-      "<rootDir>/__tests__/__utils__"
+      "<rootDir>/__tests__/utils",
+      "<rootDir>/__tests__/fixtures"
     ],
     "testMatch": [
       "**/__tests__/**/*.[jt]s?(x)",

@@ -1,7 +1,7 @@
 import express from 'express';
 import process from 'process';
 
-import getVirtualDbInstance from '../__tests__/__utils__/testHelpers.js';
+import getVirtualDbInstance from '../__tests__/utils/testHelpers.js';
 
 import routes from './routes/routes.js';
 

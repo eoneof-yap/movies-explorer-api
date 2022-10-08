@@ -13,11 +13,18 @@ export async function createUser(req, res, next) {
   }
 }
 
-export async function getUser(req, res) {
+export async function getUser(req, res, next) {
+  const { id } = req.body;
   try {
-    res.send({ user: { User, method: req.method, route: '/users/me' } });
+    const user = await User.findById(id).orFail(() => {
+      res.status(404).send({ message: '404' });
+    });
+    res.send(user);
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    if (err.kind === 'ObjectId') {
+      res.status(400).send({ error: err });
+    }
+    next(err);
   }
 }
 

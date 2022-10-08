@@ -44,6 +44,9 @@
   "jest": {
     "verbose": true,
     "testEnvironment": "node",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/__tests__/__utils__"
+    ],
     "testMatch": [
       "**/__tests__/**/*.[jt]s?(x)",
       "**/?(*.)+(spec|test).[jt]s?(x)"

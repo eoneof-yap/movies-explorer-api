@@ -1,13 +1,15 @@
 import express from 'express';
 import process from 'process';
 
+import getVirtualDbInstance from '../__tests__/__utils__/testHelpers.js';
+
 import routes from './routes/routes.js';
-import Database from './utils/Database.js';
 
 const { NODE_ENV = 'production' } = process.env;
 
+// connect to virtual DB while testing
 if (NODE_ENV === 'testing') {
-  Database.getInstance();
+  getVirtualDbInstance();
 }
 
 const app = express();

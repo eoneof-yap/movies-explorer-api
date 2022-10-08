@@ -1,14 +1,14 @@
-import supertest from 'supertest';
 import {
   describe, test, expect, jest, beforeAll, afterAll, afterEach,
 } from '@jest/globals';
-import * as db from '../utils/mongoServer.js';
+import supertest from 'supertest';
 
-import { REGISTER_PATH } from '../utils/constants.js';
-import app from '../app.js';
+import * as db from './__utils__/virtualMongoServer.js';
+import { REGISTER_PATH } from '../src/utils/constants.js';
+import app from '../src/app.js';
 
-const request = supertest(app);
 jest.setTimeout(30000);
+const request = supertest(app);
 
 const payload = {
   name: 'test',

@@ -6,5 +6,5 @@ export const LOGIN_PATH = '/signin';
 export const REGISTER_PATH = '/signup';
 
 export const USERS_PATH = '/users';
-export const CURRENT_USER_PATH = `/${USERS_PATH}/me'`;
+export const CURRENT_USER_PATH = `${USERS_PATH}/me`;
 export const MOVIES_PATH = '/movies';

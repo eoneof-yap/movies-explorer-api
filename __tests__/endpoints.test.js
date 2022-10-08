@@ -5,27 +5,26 @@ import {
 } from '@jest/globals';
 
 import * as db from './utils/virtualMongoServer.js';
-import { payload, expectedPayload, editedPayload } from './fixtures/mocks.js';
+import { userPayload, expectedUserPayload, editedUserPayload } from './fixtures/mocks.js';
 import { CURRENT_USER_PATH, MOVIES_PATH, REGISTER_PATH } from '../src/utils/constants.js';
 import app from '../src/app.js';
 
 jest.setTimeout(30000);
 const request = supertest(app);
 
-beforeAll(async () => {
-  await db.connect();
-});
-
-afterAll(async () => {
-  await db.clearDatabase();
-  await db.closeDatabase();
-});
-
 describe('Пользователь', () => {
+  beforeAll(async () => {
+    await db.connect();
+  });
+
+  afterAll(async () => {
+    await db.clearDatabase();
+    await db.closeDatabase();
+  });
   describe('Регистрация', () => {
     test('Создает пользователя и возвращает статус 201 (POST /signup', async () => {
       const response = await request
-        .post(REGISTER_PATH).send(payload)
+        .post(REGISTER_PATH).send(userPayload)
         .set('Content-Type', 'application/json');
 
       const data = response.toJSON();
@@ -35,7 +34,7 @@ describe('Пользователь', () => {
     });
 
     test('Созданный объект пользователя соответствует переданному (POST /signup', async () => {
-      expect(JSON.parse(process.env.USER)).toEqual(expectedPayload);
+      expect(JSON.parse(process.env.USER)).toEqual(expectedUserPayload);
     });
   });
 
@@ -59,17 +58,20 @@ describe('Пользователь', () => {
       const response = await request
         .patch(CURRENT_USER_PATH).send({
           id: user._id,
-          name: editedPayload.name,
-          email: editedPayload.email,
+          name: editedUserPayload.name,
+          email: editedUserPayload.email,
         })
         .set('Content-Type', 'application/json');
 
       const searchData = response.toJSON();
       const instance = JSON.parse(searchData.text);
 
-      expect(instance.name).toEqual(editedPayload.name);
-      expect(instance.email).toEqual(editedPayload.email);
+      expect(instance.name).toEqual(editedUserPayload.name);
+      expect(instance.email).toEqual(editedUserPayload.email);
     });
+  });
+  describe('Логин', () => {
+    test.todo('Логин  (POST /signin)');
   });
 });
 

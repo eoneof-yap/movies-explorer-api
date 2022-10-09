@@ -54,10 +54,17 @@ export async function updateUser(req, res, next) {
   }
 }
 
-export async function login(req, res) {
+export async function login(req, res, next) {
+  const { email, password } = req.body;
+
   try {
-    res.send({ user: { User, method: req.method, route: '/users/me' } });
+    const user = User.findUserByCredentials(email, password);
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRATION_TIMEOUT,
+    });
+
+    res.send({ token });
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    next(err);
   }
 }

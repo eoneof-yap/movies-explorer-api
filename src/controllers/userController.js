@@ -29,10 +29,10 @@ export async function createUser(req, res, next) {
   try {
     const hash = await bcrypt.hash(password, SALT_ROUNDS);
     const user = await User.create({ name, email, password: hash });
-    res.status(CREATED).send(user);
+    res.status(CREATED).send(user); // TODO: hide password and '__v'
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new BadRequestError(BAD_REQUEST_TXT));
+      next(new BadRequestError(`${BAD_REQUEST_TXT}: ${err.errors.name}`));
       return;
     }
 
@@ -94,6 +94,7 @@ export async function login(req, res, next) {
   const { email, password } = req.body;
 
   try {
+    // TODO: save JWT to cookie
     const user = await User.findUserByCredentials(email, password);
     const token = await jwt.sign({ _id: user._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRATION_TIMEOUT,

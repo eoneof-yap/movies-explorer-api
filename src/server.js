@@ -1,5 +1,3 @@
-// TODO: REPLACE CONSOLE LOG WITH ERROR HANDLER
-
 import process from 'process';
 import mongoose from 'mongoose';
 

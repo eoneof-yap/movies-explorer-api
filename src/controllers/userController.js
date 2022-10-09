@@ -1,7 +1,14 @@
-import userModel from '../models/userModel.js';
+import dotenv from 'dotenv';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-const User = userModel;
+import * as User from '../models/userModel.js';
 
+dotenv.config();
+
+const JWT_SECRET = process.env.NODE_ENV === 'production'
+  ? process.env.JWT_SECRET
+  : '123-ABC-XYZ';
 export async function createUser(req, res, next) {
   const { name, email, password } = req.body;
   try {

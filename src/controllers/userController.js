@@ -4,12 +4,22 @@ import jwt from 'jsonwebtoken';
 
 import userModel from '../models/userModel.js';
 
+import ConflictError from '../errors/ConflictError.js';
+import ForbiddenError from '../errors/ForbiddenError.js';
+
+import {
+  CREATED, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE, JWT_EXPIRATION_TIMEOUT,
+  EMAIL_EXIST_TXT, BAD_REQUEST_TXT,
+} from '../utils/constants.js';
+
 dotenv.config();
 
 const User = userModel;
+
 const JWT_SECRET = process.env.NODE_ENV === 'production'
   ? process.env.JWT_SECRET
   : '123-ABC-XYZ';
+
 /**
  * Register a user
  * @returns {{ user: { _id: string, name: string, email: string } }} user instance

@@ -60,21 +60,21 @@ describe('Пользователь', () => {
       process.env.USER = data.text; // put returned value to the global scope
     });
 
-    test('Попытка передать пустой объект возвращает JSON и статус 500 (POST /signup)', async () => {
+    test('Попытка передать пустой объект возвращает статус 500 (POST /signup)', async () => {
       const response = await createEmpty();
       const data = response.toJSON();
 
       expect(data.status).toBe(500);
     });
 
-    test('Попытка передать невалидные данные возвращает JSON и статус 400 (POST /signup)', async () => {
+    test('Попытка передать невалидные данные возвращает статус 400 (POST /signup)', async () => {
       const response = await createInvalidUser();
       const data = response.toJSON();
 
       expect(data.status).toBe(400);
     });
 
-    test('Попытка передать уже существующую почту возвращает JSON и статус 409 (POST /signup)', async () => {
+    test('Попытка передать уже существующую почту возвращает статус 409 (POST /signup)', async () => {
       const response = await createUser();
       const data = response.toJSON();
 

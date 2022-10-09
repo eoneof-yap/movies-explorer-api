@@ -2,10 +2,11 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-import * as User from '../models/userModel.js';
+import userModel from '../models/userModel.js';
 
 dotenv.config();
 
+const User = userModel;
 const JWT_SECRET = process.env.NODE_ENV === 'production'
   ? process.env.JWT_SECRET
   : '123-ABC-XYZ';

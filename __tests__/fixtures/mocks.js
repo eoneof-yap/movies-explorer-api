@@ -1,5 +1,10 @@
 import { expect } from '@jest/globals';
 
+export const loginPayload = {
+  email: 'fake@fake.com',
+  password: 'fakePassword123',
+};
+
 export const userPayload = {
   name: 'fake',
   email: 'fake@fake.com',
@@ -10,6 +15,12 @@ export const invalidUserPayload = {
   name: 123,
   email: 'fake@fake',
   password: '',
+};
+
+export const longUserPayload = {
+  name: 'fakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefakefake',
+  email: 'fakefakefakefakefakefakefakefakefakefakefakefakefake@fakefakefakefakefakefakefakefakefakefakefakefakefake.com',
+  password: 'fakePassword123',
 };
 
 export const editedUserPayload = {

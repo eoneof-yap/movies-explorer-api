@@ -7,15 +7,19 @@ import {
 
 import * as db from './utils/virtualMongoServer.js';
 import {
-  userPayload, invalidUserPayload, expectedUserPayload, editedUserPayload,
+  loginPayload, userPayload, invalidUserPayload,
+  expectedUserPayload, editedUserPayload, longUserPayload,
 } from './fixtures/mocks.js';
-import { CURRENT_USER_PATH, MOVIES_PATH, REGISTER_PATH } from '../src/utils/constants.js';
+import {
+  CURRENT_USER_PATH, LOGIN_PATH, MOVIES_PATH, REGISTER_PATH,
+} from '../src/utils/constants.js';
 import app from '../src/app.js';
 
 jest.setTimeout(30000);
 const request = supertest(app);
 
 const createUser = () => request.post(REGISTER_PATH).send(userPayload).set('Content-Type', 'application/json');
+const createLongUser = () => request.post(REGISTER_PATH).send(longUserPayload).set('Content-Type', 'application/json');
 const createInvalidUser = () => request.post(REGISTER_PATH).send(invalidUserPayload).set('Content-Type', 'application/json');
 const createEmpty = () => request.post(REGISTER_PATH).send({}).set('Content-Type', 'application/json');
 const getUser = (user) => request.get(CURRENT_USER_PATH).send({ id: user._id }).set('Content-Type', 'application/json');
@@ -77,11 +81,18 @@ describe('Пользователь', () => {
       expect(data.status).toBe(400);
     });
 
+    test('Попытка передать слишком длинные строки возвращает статус 400 (POST /signup)', async () => {
+      const response = await createLongUser();
+      const { status } = response.toJSON();
+
+      expect(status).toBe(400);
+    });
+
     test('Попытка передать уже существующую почту возвращает статус 409 (POST /signup)', async () => {
       const response = await createUser();
-      const data = response.toJSON();
+      const { status } = response.toJSON();
 
-      expect(data.status).toBe(409);
+      expect(status).toBe(409);
     });
 
     test('Созданный объект пользователя соответствует переданному (POST /signup)', async () => {
@@ -94,11 +105,11 @@ describe('Пользователь', () => {
       const user = JSON.parse(process.env.USER);
       const response = await getUser(user);
       const searchData = response.toJSON();
-      const instance = JSON.parse(searchData.text);
+      const { _id } = JSON.parse(searchData.text);
 
       expect(response.headers['content-type']).toMatch('application/json');
       expect(response.ok).toBeTruthy();
-      expect(instance._id).toEqual(user._id);
+      expect(_id).toEqual(user._id);
     });
 
     test('Обновляет имя и почту (PATCH /users/me)', async () => {
@@ -122,7 +133,17 @@ describe('Пользователь', () => {
   });
 
   describe('Логин', () => {
-    test.todo('Логин  (POST /signin)');
+    test('Логин  (POST /signin)', async () => {
+      await createUser();
+      const response = await request.post(LOGIN_PATH).send(loginPayload).set('Content-Type', 'application/json');
+      const data = response.toJSON();
+      const { token } = JSON.parse(data.text);
+      expect(response.headers['content-type']).toMatch('application/json');
+
+      console.log(token);
+
+      expect(typeof token).toBe('string');
+    });
   });
 });
 

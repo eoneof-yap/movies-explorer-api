@@ -5,6 +5,8 @@ import mongoose from 'mongoose';
 
 import app from './app.js';
 
+import globalErrorHandler from './middlewares/globalErrorHandler.js';
+
 const {
   NODE_ENV = 'production', PORT = 3000,
   DB_PATH = 'mongodb://127.0.0.1:27017/moviexdb',
@@ -21,6 +23,8 @@ const {
   }
 })();
 
+// error handling
+app.use(globalErrorHandler);
 process.on('uncaughtException', (err, origin) => {
   console.log(
     `Необработанная ошибка: "${origin}" "${err.name}" "${err.message}"`,

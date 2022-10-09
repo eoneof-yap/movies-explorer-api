@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import userModel from '../models/userModel.js';
 
 import ConflictError from '../errors/ConflictError.js';
-import ForbiddenError from '../errors/ForbiddenError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 
 import {
   CREATED, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE, JWT_EXPIRATION_TIMEOUT,
@@ -32,7 +32,7 @@ export async function createUser(req, res, next) {
     res.status(CREATED).send(user);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      next(new ForbiddenError(BAD_REQUEST_TXT));
+      next(new BadRequestError(BAD_REQUEST_TXT));
       return;
     }
 

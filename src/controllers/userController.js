@@ -9,6 +9,10 @@ dotenv.config();
 const JWT_SECRET = process.env.NODE_ENV === 'production'
   ? process.env.JWT_SECRET
   : '123-ABC-XYZ';
+/**
+ * Register a user
+ * @returns {{ user: { _id: string, name: string, email: string } }} user instance
+ */
 export async function createUser(req, res, next) {
   const { name, email, password } = req.body;
   try {
@@ -20,6 +24,10 @@ export async function createUser(req, res, next) {
   }
 }
 
+/**
+ * Get current user info
+ * @returns {{ user: { _id: string, name: string, email: string } }} user instance
+ */
 export async function getUser(req, res, next) {
   const { id } = req.body;
   try {
@@ -35,6 +43,10 @@ export async function getUser(req, res, next) {
   }
 }
 
+/**
+ * Update user info
+ * @returns {{ user: { name: string, email: string } }} user instance
+ */
 export async function updateUser(req, res, next) {
   const { id, name, email } = req.body;
   try {
@@ -54,6 +66,10 @@ export async function updateUser(req, res, next) {
   }
 }
 
+/**
+ * Login
+ * @returns {{ token: string }} JWT token
+ */
 export async function login(req, res, next) {
   const { email, password } = req.body;
 

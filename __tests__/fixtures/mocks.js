@@ -15,7 +15,7 @@ export const expectedUserPayload = {
   name: 'fake',
   email: 'fake@fake.com',
   // TODO: hide password and '__v'
-  password: 'fakePassword123',
+  password: expect.any(String),
   _id: expect.any(String),
   __v: expect.any(Number),
 };

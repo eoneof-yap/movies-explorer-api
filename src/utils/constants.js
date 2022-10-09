@@ -1,4 +1,12 @@
+// status codes
 export const CREATED = 201;
+export const BAD_REQUEST = 400;
+export const UNAUTHORIZED = 401;
+export const FORBIDDEN = 403;
+export const NOT_FOUND = 404;
+export const CONFLICT = 409;
+export const SERVER_ERROR = 500;
+
 // usrer schema strings
 export const USER_NAME_MIN_TXT = 'Имя должно быть длиной не менее двух символов';
 export const USER_NAME_MAX_TXT = 'Имя не должно быть длиннее 30 символов';
@@ -11,8 +19,22 @@ export const USERS_PATH = '/users';
 export const CURRENT_USER_PATH = `${USERS_PATH}/me`;
 export const MOVIES_PATH = '/movies';
 
+// error messages
 export const BAD_REQUEST_TXT = 'Ошибка в запросе';
+export const SERVER_ERROR_TXT = 'Сервер не смог обработать запрос';
+export const PATH_NOT_FOUND_TXT = 'Путь не найден';
+export const AUTH_REQUIRED_TXT = 'Необходима авторизация';
+export const TOKEN_EXPIRED_TXT = 'Токен недействителен';
+export const WRONG_CREDENTIALS_TXT = 'Неправильные почта или пароль';
 export const EMAIL_EXIST_TXT = 'Пользователь с такой почтой уже существует';
+export const USER_NOT_FOUND_TXT = 'Пользователь не найден';
+export const CARD_DELETED_TXT = 'Фильм удален';
+export const CARD_NOT_FOUND_TXT = 'Фильм не найден';
+export const CARD_RESTRICTED_TXT = 'Нельзя удалять чужие фильмы';
+export const WRONG_ID_TXT = 'Неверный идентификатор';
+
+// misc
+export const TOKEN_PREFIX = 'Bearer ';
 export const SALT_ROUNDS = 10;
 export const JWT_EXPIRATION_TIMEOUT = '7d';
 export const DB_DUPLICATE_KEY_CODE = 11000;

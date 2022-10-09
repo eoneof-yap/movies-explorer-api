@@ -2,7 +2,9 @@ import express from 'express';
 import process from 'process';
 
 import getVirtualDbInstance from '../__tests__/utils/testHelpers.js';
+
 import { requestLogger } from './middlewares/loggers.js';
+import notFound from './controllers/notFoundController.js';
 
 import routes from './routes/routes.js';
 
@@ -20,6 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(requestLogger);
 
-app.use(routes);
+app.use(routes); // main routes
 
-export default app;
+app.use(notFound); // 404
+
+export default app; // to server.js

@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import app from './app.js';
 
 import globalErrorHandler from './middlewares/globalErrorHandler.js';
+import { errorLogger, eventLogger, logEventsToConsole } from './middlewares/loggers.js';
 
 const {
   NODE_ENV = 'production', PORT = 3000,
@@ -16,17 +17,26 @@ const {
   try {
     await mongoose.connect(DB_PATH);
     await app.listen(PORT, () => {
-      console.log(`Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"`);
+      if (NODE_ENV === 'production') {
+        eventLogger.info(`Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"`);
+        return;
+      }
+      logEventsToConsole(`Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"`);
     });
   } catch (err) {
-    console.log(`Сервер не запущен: ${err}`);
+    if (NODE_ENV === 'production') {
+      eventLogger.info(`Сервер не запустился ${err}`);
+      return;
+    }
+    logEventsToConsole(`Сервер не запустился ${err}`);
   }
 })();
 
+// logging
+
 // error handling
+app.use(errorLogger);
 app.use(globalErrorHandler);
 process.on('uncaughtException', (err, origin) => {
-  console.log(
-    `Необработанная ошибка: "${origin}" "${err.name}" "${err.message}"`,
-  );
+  logEventsToConsole(`Необработанная ошибка: "${origin}" "${err.name}" "${err.message}"`);
 });

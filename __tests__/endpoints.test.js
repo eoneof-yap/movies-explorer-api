@@ -46,6 +46,9 @@ describe('Общее', () => {
 
     expect(data.status).toBe(404);
   });
+
+  test.todo('Обращение к защищенному роуту без авторизации возвращает статус 401 (GET /users/me)');
+  test.todo('Обращение к защищенному роуту без авторизации возвращает статус 401 (GET /movies)');
 });
 
 describe('Пользователь', () => {
@@ -81,7 +84,7 @@ describe('Пользователь', () => {
       expect(data.status).toBe(409);
     });
 
-    test('Созданный объект пользователя соответствует переданному (POST /signup', async () => {
+    test('Созданный объект пользователя соответствует переданному (POST /signup)', async () => {
       expect(JSON.parse(process.env.USER)).toEqual(expectedUserPayload);
     });
   });

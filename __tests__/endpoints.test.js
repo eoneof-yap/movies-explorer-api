@@ -1,7 +1,8 @@
+/* eslint-disable no-console */
 import supertest from 'supertest';
 
 import {
-  describe, test, expect, jest, beforeAll, afterAll,
+  describe, test, expect, jest, beforeAll, beforeEach, afterEach, afterAll,
 } from '@jest/globals';
 
 import * as db from './utils/virtualMongoServer.js';
@@ -19,9 +20,28 @@ beforeAll(async () => {
   await db.connect();
 });
 
+beforeEach(() => {
+  jest.spyOn(console, 'error');
+  console.error.mockImplementation(() => null);
+});
+
+// restore console.error messages
+afterEach(() => {
+  console.error.mockRestore();
+});
+
 afterAll(async () => {
   await db.clearDatabase();
   await db.closeDatabase();
+});
+
+describe('Общее', () => {
+  test('Обращение по несуществующему пути возвращает статус 404 (GET /fake-path)', async () => {
+    const response = await request.get('/fake-path');
+    const data = response.toJSON();
+
+    expect(data.status).toBe(404);
+  });
 });
 
 describe('Пользователь', () => {
@@ -31,7 +51,6 @@ describe('Пользователь', () => {
       const data = response.toJSON();
 
       expect(response.headers['content-type']).toMatch('application/json');
-      expect(response.ok).toBeTruthy();
       expect(data.status).toBe(201);
 
       process.env.USER = data.text; // put returned value to the global scope
@@ -41,7 +60,6 @@ describe('Пользователь', () => {
       const response = await createUser();
       const data = response.toJSON();
 
-      expect(response.ok).toBeFalsy();
       expect(data.status).toBe(409);
     });
 

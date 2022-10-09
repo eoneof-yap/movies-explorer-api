@@ -27,10 +27,19 @@ const JWT_SECRET = process.env.NODE_ENV === 'production'
 export async function createUser(req, res, next) {
   const { name, email, password } = req.body;
   try {
-    const user = await User.create({ name, email, password });
-    res.status(201).send(user);
+    const hash = await bcrypt.hash(password, SALT_ROUNDS);
+    const user = await User.create({ name, email, password: hash });
+    res.status(CREATED).send(user);
   } catch (err) {
-    res.status(500).send({ error: err.message });
+    if (err.name === 'ValidationError') {
+      next(new ForbiddenError(BAD_REQUEST_TXT));
+      return;
+    }
+
+    if (err.code === DB_DUPLICATE_KEY_CODE) {
+      next(new ConflictError(EMAIL_EXIST_TXT));
+      return;
+    }
     next(err);
   }
 }

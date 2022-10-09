@@ -6,7 +6,9 @@ import {
 } from '@jest/globals';
 
 import * as db from './utils/virtualMongoServer.js';
-import { userPayload, expectedUserPayload, editedUserPayload } from './fixtures/mocks.js';
+import {
+  userPayload, invalidUserPayload, expectedUserPayload, editedUserPayload,
+} from './fixtures/mocks.js';
 import { CURRENT_USER_PATH, MOVIES_PATH, REGISTER_PATH } from '../src/utils/constants.js';
 import app from '../src/app.js';
 
@@ -14,6 +16,8 @@ jest.setTimeout(30000);
 const request = supertest(app);
 
 const createUser = () => request.post(REGISTER_PATH).send(userPayload).set('Content-Type', 'application/json');
+const createInvalidUser = () => request.post(REGISTER_PATH).send(invalidUserPayload).set('Content-Type', 'application/json');
+const createEmpty = () => request.post(REGISTER_PATH).send({}).set('Content-Type', 'application/json');
 const getUser = (user) => request.get(CURRENT_USER_PATH).send({ id: user._id }).set('Content-Type', 'application/json');
 
 beforeAll(async () => {
@@ -54,6 +58,20 @@ describe('Пользователь', () => {
       expect(data.status).toBe(201);
 
       process.env.USER = data.text; // put returned value to the global scope
+    });
+
+    test('Попытка передать пустой объект возвращает JSON и статус 500 (POST /signup)', async () => {
+      const response = await createEmpty();
+      const data = response.toJSON();
+
+      expect(data.status).toBe(500);
+    });
+
+    test('Попытка передать невалидные данные возвращает JSON и статус 400 (POST /signup)', async () => {
+      const response = await createInvalidUser();
+      const data = response.toJSON();
+
+      expect(data.status).toBe(400);
     });
 
     test('Попытка передать уже существующую почту возвращает JSON и статус 409 (POST /signup)', async () => {

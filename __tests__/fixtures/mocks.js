@@ -6,6 +6,12 @@ export const userPayload = {
   password: 'fakePassword123',
 };
 
+export const invalidUserPayload = {
+  name: 123,
+  email: 'fake@fake',
+  password: '',
+};
+
 export const editedUserPayload = {
   name: 'fake user',
   email: 'fake.email@fake-server.com',

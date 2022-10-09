@@ -75,8 +75,8 @@ export async function login(req, res, next) {
   const { email, password } = req.body;
 
   try {
-    const user = User.findUserByCredentials(email, password);
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+    const user = await User.findUserByCredentials(email, password);
+    const token = await jwt.sign({ _id: user._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRATION_TIMEOUT,
     });
 

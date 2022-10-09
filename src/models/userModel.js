@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 import isEmail from 'validator/lib/isEmail.js';
-import { USER_NAME_MAX_TXT, USER_NAME_MIN_TXT } from '../utils/constants.js';
+import bcrypt from 'bcryptjs';
+
+import { USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT } from '../utils/constants.js';
+
+import UnauthorizedError from '../errors/NotFoundError.js';
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -24,6 +28,22 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// TODO: add static methods
+userSchema.methods.trim = () => {
+  const user = this.toObject();
+  delete user.password;
+  delete user.__v;
+  return user;
+};
+
+userSchema.statics.findUserByCredentials = async function checkCreds(email, password) {
+  const user = await this.findOne({ email }).orFail(() => {
+    throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
+  }).select('+password');
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
+  }
+  return user;
+};
 
 export default mongoose.model('user', userSchema);

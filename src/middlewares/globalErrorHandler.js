@@ -7,5 +7,5 @@ export default function globalErrorHandler(err, req, res, next) {
     error: statusCode === SERVER_ERROR ? SERVER_ERROR_TXT : message,
   });
 
-  next();
+  next(err);
 }

@@ -32,13 +32,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.methods.trim = () => {
-  const user = this.toObject();
-  delete user.password;
-  delete user.__v;
-  return user;
-};
-
 userSchema.statics.findUserByCredentials = async function checkCreds(email, password) {
   const user = await this.findOne({ email }).orFail(() => {
     throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);

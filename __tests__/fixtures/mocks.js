@@ -31,10 +31,7 @@ export const editedUserPayload = {
 export const expectedUserPayload = {
   name: 'fake',
   email: 'fake@fake.com',
-  // TODO: hide password and '__v'
-  password: expect.any(String),
   _id: expect.any(String),
-  __v: expect.any(Number),
 };
 
 export const moviePayload = {

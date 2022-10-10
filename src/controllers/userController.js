@@ -29,7 +29,12 @@ export async function createUser(req, res, next) {
   const { name, email, password } = req.body;
   try {
     const hash = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = await User.create({ name, email, password: hash });
+    let user = await User.create({ name, email, password: hash });
+
+    user = user.toObject();
+    delete user.password;
+    delete user.__v;
+
     res.status(CREATED).send(user); // TODO: hide password and '__v'
   } catch (err) {
     if (err.name === 'ValidationError') {

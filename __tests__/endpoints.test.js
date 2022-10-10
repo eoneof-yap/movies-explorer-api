@@ -26,6 +26,7 @@ const createEmptyUser = () => request.post(REGISTER_PATH).send({}).set('Content-
 const getUser = (user) => request.get(CURRENT_USER_PATH).send({ id: user._id }).set('Content-Type', 'application/json');
 
 const login = () => request.post(LOGIN_PATH).send(loginPayload).set('Content-Type', 'application/json');
+const invalidlogin = () => request.post(LOGIN_PATH).send(invalidUserPayload).set('Content-Type', 'application/json');
 
 const patchUser = (user) => request.patch(CURRENT_USER_PATH).send({
   id: user._id,
@@ -105,6 +106,10 @@ describe('Пользователь', () => {
     test('Созданный объект пользователя соответствует переданному (POST /signup)', async () => {
       expect(JSON.parse(process.env.USER)).toEqual(expectedUserPayload);
     });
+
+    test('В ответе не приходит пароль и __v (POST /signup)', async () => {
+      expect(JSON.parse(process.env.USER).password).toBeFalsy();
+    });
   });
 
   describe('Данные пользователя', () => {
@@ -146,13 +151,22 @@ describe('Пользователь', () => {
   });
 
   describe('Логин', () => {
-    test('Логин  (POST /signin)', async () => {
+    test('Успешный вход возвращает статус 200 и объект со строкой токена (POST /signin)', async () => {
       await createUser();
       const response = await login();
       const data = response.toJSON();
+      console.log(data);
       const { token } = JSON.parse(data.text);
       expect(response.headers['content-type']).toMatch('application/json');
+      expect(response.status).toBe(200);
       expect(typeof token).toBe('string');
+
+      process.env.USER = data.text; // put returned value to the global scope
+    });
+
+    test('Неудачный вход возвращает статус 401 (POST /signin)', async () => {
+      const response = await invalidlogin();
+      expect(response.status).toBe(401);
     });
   });
 });

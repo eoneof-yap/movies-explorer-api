@@ -2,7 +2,10 @@ import mongoose from 'mongoose';
 import isEmail from 'validator/lib/isEmail.js';
 import bcrypt from 'bcryptjs';
 
-import { USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT } from '../utils/constants.js';
+import {
+  USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT,
+  PASSWORD_MIN_TXT,
+} from '../utils/constants.js';
 
 import UnauthorizedError from '../errors/NotFoundError.js';
 
@@ -19,6 +22,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
+    minlength: [8, PASSWORD_MIN_TXT],
   },
   name: {
     type: String,

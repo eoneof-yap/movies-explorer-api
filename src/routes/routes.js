@@ -1,6 +1,8 @@
 import express from 'express';
 
-import { MOVIES_PATH } from '../utils/constants.js';
+import {
+  MOVIES_PATH, MOVIE_ID_PATH,
+} from '../utils/constants.js';
 import { deleteMovieById, getMovies, createMovie } from '../controllers/controllers.js';
 
 import authRoute from './authRoute.js';
@@ -20,6 +22,6 @@ routes.use(userRoute);
 // moviesRoute
 routes.get(MOVIES_PATH, getMovies)
   .post(MOVIES_PATH, validateMovieInfo, createMovie)
-  .delete(`${MOVIES_PATH}/:id`, deleteMovieById);
+  .delete(MOVIE_ID_PATH, deleteMovieById);
 
 export default routes;

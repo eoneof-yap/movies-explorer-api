@@ -19,6 +19,7 @@ export const REGISTER_PATH = '/signup';
 export const USERS_PATH = '/users';
 export const CURRENT_USER_PATH = `${USERS_PATH}/me`;
 export const MOVIES_PATH = '/movies';
+export const MOVIE_ID_PATH = `${MOVIES_PATH}/:id`;
 
 // error messages
 export const BAD_REQUEST_TXT = 'Ошибка в запросе';
@@ -29,9 +30,9 @@ export const TOKEN_EXPIRED_TXT = 'Токен недействителен';
 export const WRONG_CREDENTIALS_TXT = 'Неправильные почта или пароль';
 export const EMAIL_EXIST_TXT = 'Пользователь с такой почтой уже существует';
 export const USER_NOT_FOUND_TXT = 'Пользователь не найден';
-export const CARD_DELETED_TXT = 'Фильм удален';
-export const CARD_NOT_FOUND_TXT = 'Фильм не найден';
-export const CARD_RESTRICTED_TXT = 'Нельзя удалять чужие фильмы';
+export const MOVIE_DELETED_TXT = 'Фильм удален';
+export const MOVIE_NOT_FOUND_TXT = 'Фильм не найден';
+export const MOVIE_RESTRICTED_TXT = 'Нельзя удалять чужие фильмы';
 export const WRONG_ID_TXT = 'Неверный идентификатор';
 
 // misc

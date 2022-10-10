@@ -11,6 +11,16 @@ export const userPayload = {
   password: 'fakePassword123',
 };
 
+export const wrongEmailPayload = {
+  email: 'wrong-email@fake',
+  password: 'fake',
+};
+
+export const wrongPasswordPayload = {
+  email: 'fake@fake',
+  password: 'wrong-password',
+};
+
 export const invalidUserPayload = {
   name: 123,
   email: 'fake@fake',

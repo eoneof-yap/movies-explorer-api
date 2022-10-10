@@ -9,7 +9,7 @@ import * as db from './utils/virtualMongoServer.js';
 import {
   loginPayload, userPayload, invalidUserPayload,
   expectedUserPayload, editedUserPayload, longUserPayload,
-  shortIdPayload, nonHexIdPayload, nonExistantIdPayload,
+  shortIdPayload, nonHexIdPayload, nonExistantIdPayload, wrongPasswordPayload, wrongEmailPayload,
 } from './fixtures/mocks.js';
 import {
   CURRENT_USER_PATH, LOGIN_PATH, MOVIES_PATH, REGISTER_PATH,
@@ -27,6 +27,8 @@ const getUser = (user) => request.get(CURRENT_USER_PATH).send({ id: user._id }).
 
 const login = () => request.post(LOGIN_PATH).send(loginPayload).set('Content-Type', 'application/json');
 const invalidlogin = () => request.post(LOGIN_PATH).send(invalidUserPayload).set('Content-Type', 'application/json');
+const wrongPasswordLogin = () => request.post(LOGIN_PATH).send(wrongPasswordPayload).set('Content-Type', 'application/json');
+const wrongEmailLogin = () => request.post(LOGIN_PATH).send(wrongEmailPayload).set('Content-Type', 'application/json');
 
 const patchUser = (user) => request.patch(CURRENT_USER_PATH).send({
   id: user._id,
@@ -161,7 +163,7 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
   });
 
   describe('/signin', () => {
-    test('Успешный вход возвращает статус 200 и объект со строкой токена ', async () => {
+    test('[POST] Успешный вход возвращает статус 200 и объект со строкой токена ', async () => {
       await createUser();
       const response = await login();
       const data = response.toJSON();
@@ -174,9 +176,19 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       process.env.USER = data.text; // put returned value to the global scope
     });
 
-    test('Неудачный вход возвращает статус 401 ', async () => {
+    test('[POST] Неудачный вход возвращает статус 401', async () => {
       const response = await invalidlogin();
       expect(response.status).toBe(401);
+    });
+
+    test('[POST] Неверный email возвращает статус 403', async () => {
+      const response = await wrongEmailLogin();
+      expect(response.status).toBe(403);
+    });
+
+    test('[POST] Неверный пароль возвращает статус 403 ', async () => {
+      const response = await wrongPasswordLogin();
+      expect(response.status).toBe(403);
     });
   });
 });

@@ -9,6 +9,7 @@ import * as db from './utils/virtualMongoServer.js';
 import {
   loginPayload, userPayload, invalidUserPayload,
   expectedUserPayload, editedUserPayload, longUserPayload,
+  shortIdPayload, nonHexIdPayload, nonExistantIdPayload,
 } from './fixtures/mocks.js';
 import {
   CURRENT_USER_PATH, LOGIN_PATH, MOVIES_PATH, REGISTER_PATH,
@@ -32,23 +33,9 @@ const patchUser = (user) => request.patch(CURRENT_USER_PATH).send({
   email: editedUserPayload.email,
 });
 
-const patchShortId = () => request.patch(CURRENT_USER_PATH).send({
-  id: '123', // too short
-  name: editedUserPayload.name,
-  email: editedUserPayload.email,
-});
-
-const patchNonHexId = () => request.patch(CURRENT_USER_PATH).send({
-  id: 'zxcvbnmasdfghjklqwertyui', // non hex
-  name: editedUserPayload.name,
-  email: editedUserPayload.email,
-});
-
-const patchNonExistandId = () => request.patch(CURRENT_USER_PATH).send({
-  id: '634214006c025e0ffe6aab46', // valid but does not exist
-  name: editedUserPayload.name,
-  email: editedUserPayload.email,
-});
+const patchShortId = () => request.patch(CURRENT_USER_PATH).send(shortIdPayload);
+const patchNonHexId = () => request.patch(CURRENT_USER_PATH).send(nonHexIdPayload);
+const patchNonExistandId = () => request.patch(CURRENT_USER_PATH).send(nonExistantIdPayload);
 
 beforeAll(async () => {
   await db.connect();

@@ -64,3 +64,21 @@ export const expectedMoviePayload = {
   thumbnail: 'https://fake.com/fake-thunb.jpg',
   movieId: '1234567890',
 };
+
+export const shortIdPayload = {
+  id: '123',
+  name: editedUserPayload.name,
+  email: editedUserPayload.email,
+};
+
+export const nonHexIdPayload = {
+  id: 'zxcvbnmasdfghjklqwertyui',
+  name: editedUserPayload.name,
+  email: editedUserPayload.email,
+};
+
+export const nonExistantIdPayload = {
+  id: '634214006c025e0ffe6aab46',
+  name: editedUserPayload.name,
+  email: editedUserPayload.email,
+};

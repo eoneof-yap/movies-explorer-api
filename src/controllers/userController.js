@@ -9,7 +9,7 @@ import BadRequestError from '../errors/BadRequestError.js';
 
 import {
   CREATED, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE, JWT_EXPIRATION_TIMEOUT,
-  EMAIL_EXIST_TXT, BAD_REQUEST_TXT, USER_NOT_FOUND_TXT, UNAUTHORIZED, AUTH_REQUIRED_TXT,
+  EMAIL_EXIST_TXT, BAD_REQUEST_TXT, USER_NOT_FOUND_TXT, AUTH_REQUIRED_TXT,
 } from '../utils/constants.js';
 import NotFoundError from '../errors/NotFoundError.js';
 import UnauthorizedError from '../errors/UnauthorizedError.js';

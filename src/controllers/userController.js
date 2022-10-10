@@ -9,8 +9,9 @@ import BadRequestError from '../errors/BadRequestError.js';
 
 import {
   CREATED, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE, JWT_EXPIRATION_TIMEOUT,
-  EMAIL_EXIST_TXT, BAD_REQUEST_TXT,
+  EMAIL_EXIST_TXT, BAD_REQUEST_TXT, USER_NOT_FOUND_TXT,
 } from '../utils/constants.js';
+import NotFoundError from '../errors/NotFoundError.js';
 
 dotenv.config();
 
@@ -75,12 +76,12 @@ export async function updateUser(req, res, next) {
       { name, email },
       { new: true, runValidators: true },
     ).orFail(() => {
-      res.status(404).send({ message: '404' });
+      next(new NotFoundError(USER_NOT_FOUND_TXT));
     });
     res.send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      res.status(400).send({ error: err });
+      next(new BadRequestError(BAD_REQUEST_TXT));
     }
     next(err);
   }

@@ -7,7 +7,7 @@ import {
   PASSWORD_MIN_TXT,
 } from '../utils/constants.js';
 
-import UnauthorizedError from '../errors/NotFoundError.js';
+import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 const userSchema = new mongoose.Schema({
   email: {

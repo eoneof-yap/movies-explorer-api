@@ -5,12 +5,15 @@ import { deleteMovieById, getMovies, createMovie } from '../controllers/controll
 
 import authRoute from './authRoute.js';
 import userRoute from './userRoute.js';
+import authorize from '../middlewares/authorize.js';
 
 const routes = express();
 
+// public routesdd
 routes.use(authRoute);
 
-// TODO: protect with auth
+// protected routes
+routes.use(authorize);
 routes.use(userRoute);
 
 // moviesRoute

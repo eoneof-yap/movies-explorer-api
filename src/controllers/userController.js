@@ -9,9 +9,10 @@ import BadRequestError from '../errors/BadRequestError.js';
 
 import {
   CREATED, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE, JWT_EXPIRATION_TIMEOUT,
-  EMAIL_EXIST_TXT, BAD_REQUEST_TXT, USER_NOT_FOUND_TXT,
+  EMAIL_EXIST_TXT, BAD_REQUEST_TXT, USER_NOT_FOUND_TXT, UNAUTHORIZED, AUTH_REQUIRED_TXT,
 } from '../utils/constants.js';
 import NotFoundError from '../errors/NotFoundError.js';
+import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 dotenv.config();
 
@@ -58,12 +59,12 @@ export async function getUser(req, res, next) {
   const { id } = req.body;
   try {
     const user = await User.findById(id).orFail(() => {
-      res.status(404).send({ message: '404' });
+      next(new UnauthorizedError(AUTH_REQUIRED_TXT));
     });
     res.send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      res.status(400).send({ error: err });
+      next(new BadRequestError(BAD_REQUEST_TXT));
     }
     next(err);
   }

@@ -30,11 +30,9 @@ const {
   }
 })();
 
-// logging
-
 // error handling
 app.use(errorLogger);
 app.use(globalErrorHandler);
 process.on('uncaughtException', (err, origin) => {
-  logEventsToConsole(`Необработанная ошибка: "${origin}" "${err.name}" "${err.message}"`);
+  logEventsToConsole(`Необработанная ошибка: "${origin}" "${err.name}" "${err.message}" "${err.stack}`);
 });

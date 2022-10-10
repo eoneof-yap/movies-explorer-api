@@ -11,7 +11,7 @@ const JWT_SECRET = process.env.NODE_ENV === 'production'
 
 dotenv.config();
 
-export default function authorize(err, req, res, next) {
+export default function authorize(req, res, next) {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith(TOKEN_PREFIX)) {
@@ -28,5 +28,5 @@ export default function authorize(err, req, res, next) {
   }
   req.user = payload;
 
-  next(err);
+  next();
 }

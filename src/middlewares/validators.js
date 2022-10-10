@@ -17,7 +17,7 @@ export const validateId = celebrate({
   }),
 });
 
-export const validateUserCredentials = celebrate({
+export const validateRegister = celebrate({
   body: Joi.object().keys({
     name: validUserName,
     email: validEmail,
@@ -25,11 +25,17 @@ export const validateUserCredentials = celebrate({
   }),
 });
 
-export const validateUserInfo = celebrate({
+export const validateLogin = celebrate({
   body: Joi.object().keys({
-    id: validId,
-    name: validUserName,
     email: validEmail,
+    password: valisrassword,
+  }),
+});
+
+export const validateUpdate = celebrate({
+  body: Joi.object().keys({
+    email: validEmail,
+    password: valisrassword,
   }),
 });
 

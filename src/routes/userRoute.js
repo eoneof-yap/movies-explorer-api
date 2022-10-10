@@ -3,12 +3,12 @@ import { errors } from 'celebrate';
 
 import { CURRENT_USER_PATH } from '../utils/constants.js';
 import { getUser, updateUser } from '../controllers/userController.js';
-import { validateId, validateUserInfo } from '../middlewares/validators.js';
+import { validateId, validateUpdate } from '../middlewares/validators.js';
 
 const userRoute = express();
 
 userRoute.get(CURRENT_USER_PATH, validateId, getUser)
-  .patch(CURRENT_USER_PATH, validateUserInfo, updateUser);
+  .patch(CURRENT_USER_PATH, validateUpdate, updateUser);
 
 userRoute.use(errors());
 

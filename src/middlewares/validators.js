@@ -9,7 +9,7 @@ const validnumber = Joi.number();
 // user data config
 const validUserName = Joi.string().required().min(2).max(30);
 const validEmail = Joi.string().required().email();
-const valisrassword = Joi.string().required().min(8);
+const validPassword = Joi.string().required().min(8);
 
 export const validateId = celebrate({
   body: Joi.object().keys({
@@ -21,21 +21,21 @@ export const validateRegister = celebrate({
   body: Joi.object().keys({
     name: validUserName,
     email: validEmail,
-    password: valisrassword,
+    password: validPassword,
   }),
 });
 
 export const validateLogin = celebrate({
   body: Joi.object().keys({
     email: validEmail,
-    password: valisrassword,
+    password: validPassword,
   }),
 });
 
 export const validateUpdate = celebrate({
   body: Joi.object().keys({
     email: validEmail,
-    password: valisrassword,
+    password: validPassword,
   }),
 });
 

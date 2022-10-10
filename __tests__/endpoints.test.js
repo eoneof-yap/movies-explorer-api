@@ -53,24 +53,34 @@ afterEach(() => {
 });
 
 afterAll(async () => {
-  // await db.clearDatabase();
+// await db.clearDatabase();
   await db.closeDatabase();
 });
 
-describe('Общее', () => {
-  test('Обращение по несуществующему пути возвращает статус 404 (GET /fake-path)', async () => {
-    const response = await request.get('/fake-path');
-    const data = response.toJSON();
-    expect(data.status).toBe(404);
-  });
+describe('ОБЩЕЕ', () => {
+  describe('/fake-path', () => {
+    test('[GET] Обращение по несуществующему пути возвращает статус 404 ', async () => {
+      const response = await request.get('/fake-path');
+      const data = response.toJSON();
+      expect(data.status).toBe(404);
+    });
 
-  test.todo('Обращение к защищенному роуту без авторизации возвращает статус 401 (GET /users/me)');
-  test.todo('Обращение к защищенному роуту без авторизации возвращает статус 401 (GET /movies)');
+    test('[GET] Обращение к защищенному роуту без авторизации возвращает статус 401 ', async () => {
+      const response = await request.get(CURRENT_USER_PATH);
+      const data = response.toJSON();
+      expect(data.status).toBe(401);
+    });
+    test('[GET] Обращение к защищенному роуту без авторизации возвращает статус 401 ', async () => {
+      const response = await request.get(MOVIES_PATH);
+      const data = response.toJSON();
+      expect(data.status).toBe(401);
+    });
+  });
 });
 
-describe('Пользователь', () => {
-  describe('Регистрация', () => {
-    test('Создает пользователя и возвращает JSON и статус 201 (POST /signup)', async () => {
+describe('ПОЛЬЗОВАТЕЛЬ', () => {
+  describe('/signup', () => {
+    test('[POST] Создает пользователя и возвращает JSON и статус 201 ', async () => {
       const response = await createUser();
       const data = response.toJSON();
       expect(response.headers['content-type']).toMatch('application/json');
@@ -79,41 +89,41 @@ describe('Пользователь', () => {
       process.env.USER = data.text; // put returned value to the global scope
     });
 
-    test('Попытка передать пустой объект возвращает статус 500 (POST /signup)', async () => {
+    test('[POST] Созданный объект пользователя соответствует переданному ', async () => {
+      expect(JSON.parse(process.env.USER)).toEqual(expectedUserPayload);
+    });
+
+    test('[POST] Попытка передать пустой объект возвращает статус 500 ', async () => {
       const response = await createEmptyUser();
       const data = response.toJSON();
       expect(data.status).toBe(500);
     });
 
-    test('Попытка передать невалидные данные возвращает статус 400 (POST /signup)', async () => {
+    test('[POST] Попытка передать невалидные данные возвращает статус 400 ', async () => {
       const response = await createInvalidUser();
       const data = response.toJSON();
       expect(data.status).toBe(400);
     });
 
-    test('Попытка передать слишком длинные строки возвращает статус 400 (POST /signup)', async () => {
+    test('[POST] Попытка передать слишком длинные строки возвращает статус 400 ', async () => {
       const response = await createLongUser();
       const { status } = response.toJSON();
       expect(status).toBe(400);
     });
 
-    test('Попытка передать уже существующую почту возвращает статус 409 (POST /signup)', async () => {
+    test('[POST] Попытка передать уже существующую почту возвращает статус 409 ', async () => {
       const response = await createUser();
       const { status } = response.toJSON();
       expect(status).toBe(409);
     });
 
-    test('Созданный объект пользователя соответствует переданному (POST /signup)', async () => {
-      expect(JSON.parse(process.env.USER)).toEqual(expectedUserPayload);
-    });
-
-    test('В ответе не приходит пароль и __v (POST /signup)', async () => {
+    test('[POST] В ответе нет полей "password" и "__v"', async () => {
       expect(JSON.parse(process.env.USER).password).toBeFalsy();
     });
   });
 
-  describe('Данные пользователя', () => {
-    test('Находит пользователя по ID (GET /users/me)', async () => {
+  describe('/users/me', () => {
+    test('[GET] Находит пользователя по ID ', async () => {
       const user = JSON.parse(process.env.USER);
       const response = await getUser(user);
       const searchData = response.toJSON();
@@ -123,7 +133,7 @@ describe('Пользователь', () => {
       expect(_id).toEqual(user._id);
     });
 
-    test('Обновляет имя и почту (PATCH /users/me)', async () => {
+    test('[PATCH] Обновляет имя и почту ', async () => {
       const user = JSON.parse(process.env.USER);
       const response = await patchUser(user);
       const searchData = response.toJSON();
@@ -134,24 +144,24 @@ describe('Пользователь', () => {
       expect(instance.email).toEqual(editedUserPayload.email);
     });
 
-    test('Попытка передать невалидный id возвращает статус 400 (PATCH /users/me)', async () => {
+    test('[PATCH] Попытка передать невалидный id возвращает статус 400 ', async () => {
       const response = await patchNonHexId();
       expect(response.status).toBe(400);
     });
 
-    test('Попытка передать короткий id возвращает статус 400 (PATCH /users/me)', async () => {
+    test('[PATCH] Попытка передать короткий id возвращает статус 400 ', async () => {
       const response = await patchShortId();
       expect(response.status).toBe(400);
     });
 
-    test('Попытка передать несуществующий id возвращает статус 404 (PATCH /users/me)', async () => {
+    test('[PATCH] Попытка передать несуществующий id возвращает статус 404 ', async () => {
       const response = await patchNonExistandId();
       expect(response.status).toBe(404);
     });
   });
 
-  describe('Логин', () => {
-    test('Успешный вход возвращает статус 200 и объект со строкой токена (POST /signin)', async () => {
+  describe('/signin', () => {
+    test('Успешный вход возвращает статус 200 и объект со строкой токена ', async () => {
       await createUser();
       const response = await login();
       const data = response.toJSON();
@@ -164,25 +174,29 @@ describe('Пользователь', () => {
       process.env.USER = data.text; // put returned value to the global scope
     });
 
-    test('Неудачный вход возвращает статус 401 (POST /signin)', async () => {
+    test('Неудачный вход возвращает статус 401 ', async () => {
       const response = await invalidlogin();
       expect(response.status).toBe(401);
     });
   });
 });
 
-describe('Фильмы', () => {
-  test.todo('Cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameRU, nameEN и thumbnail, movieId (POST /movies)');
+describe('ФИЛЬМЫ', () => {
+  describe('/movies', () => {
+    test.todo('[POST] Cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameRU, nameEN и thumbnail, movieId ');
 
-  test.skip('Получает список фильмов (GET /movies)', async () => {
-    const response = await request.get(MOVIES_PATH);
-    const data = response.toJSON();
-    expect(data.status).toBe(201);
+    test.skip('[GET] Получает список фильмов ', async () => {
+      const response = await request.get(MOVIES_PATH);
+      const data = response.toJSON();
+      expect(data.status).toBe(201);
+    });
+
+    test.skip('[GET] В ответе приходит массив ', async () => {
+      expect(/* data */).toEqual(expect.arrayContaining([]));
+    });
   });
 
-  test.skip('В ответе приходит массив (GET /movies)', async () => {
-    expect(/* data */).toEqual(expect.arrayContaining([]));
+  describe('/movies/id', () => {
+    test.todo('[DELETE] Удаляет сохранённый фильм по id ');
   });
-
-  test.todo('Удаляет сохранённый фильм по id (DELETE /movies/_id)');
 });

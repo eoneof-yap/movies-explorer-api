@@ -7,7 +7,9 @@ import getVirtualDbInstance from '../__tests__/utils/testHelpers.js';
 import { requestLogger } from './middlewares/loggers.js';
 import notFound from './controllers/notFoundController.js';
 
-import routes from './routes/routes.js';
+import authRoute from './routes/authRoute.js';
+import userRoute from './routes/userRoute.js';
+import validateToken from './middlewares/validateToken.js';
 
 const { NODE_ENV = 'production' } = process.env;
 
@@ -23,11 +25,17 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(requestLogger);
 
-app.use(routes); // main routes
+// public routes
+app.use(authRoute);
+
+// app.use(routes); // main routes
+
+// protected routes
+app.use(validateToken);
+app.use(userRoute);
 
 // TODO: catch unauthorized 404s
 app.use(notFound); // 404
-
 app.use(errors()); // catch Joi validation errors
 
 export default app; // to server.js

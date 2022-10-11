@@ -77,10 +77,10 @@ afterAll(async () => {
 describe('ОБЩЕЕ', () => {
   describe('/fake-path', () => {
     // FIXME: requires auth???
-    test('[GET] Обращение по несуществующему пути возвращает статус 404 ', async () => {
+    test('[GET] Обращение по несуществующему пути без авторизации возвращает статус 401 ', async () => {
       const response = await request.get('/fake-path');
       const data = response.toJSON();
-      expect(data.status).toBe(404);
+      expect(data.status).toBe(401);
     });
 
     test('[GET] Обращение к защищенному роуту без авторизации возвращает статус 401 ', async () => {
@@ -157,7 +157,7 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       expect(response.status).toBe(403);
     });
 
-    test('[POST] Неверный пароль возвращает статус 403 ', async () => {
+    test('[POST] Неверный пароль возвращает статус 403', async () => {
       const response = await wrongPasswordLogin();
       expect(response.status).toBe(403);
 
@@ -201,6 +201,11 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
 
     test('[PATCH] Попытка передать несуществующий id возвращает статус 404 ', async () => {
       const response = await patchNonExistandId().set('Authorization', `${process.env.TOKEN}`);
+      expect(response.status).toBe(404);
+    });
+
+    test('[GET] Попытка перейти по несуществующему защищенному пути возвращает 404', async () => {
+      const response = await request.get('/wrong-path').set('Authorization', `${process.env.TOKEN}`);
       expect(response.status).toBe(404);
     });
   });

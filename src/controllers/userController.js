@@ -37,7 +37,6 @@ export async function createUser(req, res, next) {
 
     if (err.code === DB_DUPLICATE_KEY_CODE) { // mongo err
       next(new ConflictError(EMAIL_EXIST_TXT));
-      return;
     }
     next(err);
   }
@@ -60,7 +59,6 @@ export async function getUser(req, res, next) {
 
     if (err.kind === 'ObjectId') {
       next(new BadRequestError(BAD_REQUEST_TXT));
-      return;
     }
     next(err);
   }
@@ -87,7 +85,6 @@ export async function updateUser(req, res, next) {
 
     if (err.kind === 'ObjectId') {
       next(new BadRequestError(BAD_REQUEST_TXT));
-      return;
     }
     next(err);
   }
@@ -105,7 +102,6 @@ export async function login(req, res, next) {
     const user = await User.authorize(email, password);
     if (!user) {
       next(new BadRequestError(BAD_REQUEST_TXT));
-      return;
     }
     const token = await jwt.sign({ _id: user._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRATION_TIMEOUT,

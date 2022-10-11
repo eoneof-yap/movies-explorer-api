@@ -16,7 +16,6 @@ export default function authorize(req, res, next) {
 
   if (!authorization || !authorization.startsWith(TOKEN_PREFIX)) {
     next(new UnauthorizedError(AUTH_REQUIRED_TXT));
-    return;
   }
 
   const token = authorization.replace(TOKEN_PREFIX, '');
@@ -24,7 +23,6 @@ export default function authorize(req, res, next) {
   const payload = jwt.verify(token, JWT_SECRET);
   if (!payload) {
     next(new UnauthorizedError(TOKEN_EXPIRED_TXT));
-    return;
   }
 
   req.user = payload;

@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 import supertest from 'supertest';
+import process from 'process';
+import dotenv from 'dotenv';
 
 import {
   describe, test, expect, jest, beforeAll, beforeEach, afterEach, afterAll,
@@ -16,20 +18,33 @@ import {
 } from '../src/utils/constants.js';
 import app from '../src/app.js';
 
+dotenv.config();
+
 jest.setTimeout(30000);
 const request = supertest(app);
 
-const createUser = () => request.post(REGISTER_PATH).send(userPayload).set('Content-Type', 'application/json');
 const createLongUser = () => request.post(REGISTER_PATH).send(longUserPayload).set('Content-Type', 'application/json');
 const createInvalidUser = () => request.post(REGISTER_PATH).send(invalidUserPayload).set('Content-Type', 'application/json');
 const createEmptyUser = () => request.post(REGISTER_PATH).send({}).set('Content-Type', 'application/json');
-const getUser = (user) => request.get(CURRENT_USER_PATH).send({ id: user._id }).set('Content-Type', 'application/json');
+const createUser = async () => {
+  const response = await request.post(REGISTER_PATH).send(userPayload).set('Content-Type', 'application/json');
+  const data = response.toJSON();
+  process.env.USER = data.text; // put returned value to the global scope
+  return response;
+};
 
-const login = () => request.post(LOGIN_PATH).send(loginPayload).set('Content-Type', 'application/json');
 const invalidlogin = () => request.post(LOGIN_PATH).send(invalidUserPayload).set('Content-Type', 'application/json');
 const wrongPasswordLogin = () => request.post(LOGIN_PATH).send(wrongPasswordPayload).set('Content-Type', 'application/json');
 const wrongEmailLogin = () => request.post(LOGIN_PATH).send(wrongEmailPayload).set('Content-Type', 'application/json');
+const login = async () => {
+  const response = await request.post(LOGIN_PATH).send(loginPayload).set('Content-Type', 'application/json');
+  const data = response.toJSON();
+  const { token } = JSON.parse(data.text);
+  process.env.TOKEN = `Bearer ${token}`;
+  return response;
+};
 
+const getUser = (user) => request.get(CURRENT_USER_PATH).send({ id: user._id }).set('Content-Type', 'application/json');
 const patchUser = (user) => request.patch(CURRENT_USER_PATH).send({
   id: user._id,
   name: editedUserPayload.name,
@@ -50,17 +65,18 @@ beforeEach(() => {
 });
 
 // restore console.error messages
-afterEach(() => {
+afterEach(async () => {
   console.error.mockRestore();
 });
 
 afterAll(async () => {
-// await db.clearDatabase();
+  await db.clearDatabase();
   await db.closeDatabase();
 });
 
 describe('ОБЩЕЕ', () => {
   describe('/fake-path', () => {
+    // FIXME: requires auth???
     test('[GET] Обращение по несуществующему пути возвращает статус 404 ', async () => {
       const response = await request.get('/fake-path');
       const data = response.toJSON();
@@ -87,12 +103,14 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       const data = response.toJSON();
       expect(response.headers['content-type']).toMatch('application/json');
       expect(data.status).toBe(201);
-
-      process.env.USER = data.text; // put returned value to the global scope
     });
 
     test('[POST] Созданный объект пользователя соответствует переданному ', async () => {
       expect(JSON.parse(process.env.USER)).toEqual(expectedUserPayload);
+    });
+
+    test('[POST] В ответе нет полей "password" и "__v"', async () => {
+      expect(JSON.parse(process.env.USER).password).toBeFalsy();
     });
 
     test('[POST] Попытка передать пустой объект возвращает статус 400', async () => {
@@ -104,7 +122,6 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
     test('[POST] Попытка передать невалидные данные возвращает статус 400 ', async () => {
       const response = await createInvalidUser();
       const data = response.toJSON();
-      console.log(data);
       expect(data.status).toBe(400);
     });
 
@@ -119,61 +136,15 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       const { status } = response.toJSON();
       expect(status).toBe(409);
     });
-
-    test('[POST] В ответе нет полей "password" и "__v"', async () => {
-      expect(JSON.parse(process.env.USER).password).toBeFalsy();
-    });
-  });
-
-  describe('/users/me', () => {
-    test('[GET] Находит пользователя по ID ', async () => {
-      const user = JSON.parse(process.env.USER);
-      const response = await getUser(user);
-      const searchData = response.toJSON();
-      const { _id } = JSON.parse(searchData.text);
-      expect(response.headers['content-type']).toMatch('application/json');
-      expect(response.ok).toBeTruthy();
-      expect(_id).toEqual(user._id);
-    });
-
-    test('[PATCH] Обновляет имя и почту ', async () => {
-      const user = JSON.parse(process.env.USER);
-      const response = await patchUser(user);
-      const searchData = response.toJSON();
-      const instance = JSON.parse(searchData.text);
-      expect(response.headers['content-type']).toMatch('application/json');
-      expect(response.ok).toBeTruthy();
-      expect(instance.name).toEqual(editedUserPayload.name);
-      expect(instance.email).toEqual(editedUserPayload.email);
-    });
-
-    test('[PATCH] Попытка передать невалидный id возвращает статус 400 ', async () => {
-      const response = await patchNonHexId();
-      expect(response.status).toBe(400);
-    });
-
-    test('[PATCH] Попытка передать короткий id возвращает статус 400 ', async () => {
-      const response = await patchShortId();
-      expect(response.status).toBe(400);
-    });
-
-    test('[PATCH] Попытка передать несуществующий id возвращает статус 404 ', async () => {
-      const response = await patchNonExistandId();
-      expect(response.status).toBe(404);
-    });
   });
 
   describe('/signin', () => {
     test('[POST] Успешный вход возвращает статус 200 и объект со строкой токена ', async () => {
       await createUser();
       const response = await login();
-      const data = response.toJSON();
-      const { token } = JSON.parse(data.text);
       expect(response.headers['content-type']).toMatch('application/json');
       expect(response.status).toBe(200);
-      expect(typeof token).toBe('string');
-
-      process.env.USER = data.text; // put returned value to the global scope
+      expect(typeof process.env.TOKEN).toBe('string');
     });
 
     test('[POST] Неудачный вход возвращает статус 400', async () => {
@@ -189,6 +160,48 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
     test('[POST] Неверный пароль возвращает статус 403 ', async () => {
       const response = await wrongPasswordLogin();
       expect(response.status).toBe(403);
+
+      await db.clearDatabase();
+    });
+  });
+
+  describe('/users/me', () => {
+    test('[GET] Находит пользователя по ID ', async () => {
+      await createUser();
+      await login();
+      const user = JSON.parse(process.env.USER);
+      const response = await getUser(user).set('Authorization', `${process.env.TOKEN}`);
+      const data = response.toJSON();
+      const { _id } = JSON.parse(data.text);
+      expect(response.headers['content-type']).toMatch('application/json');
+      expect(response.ok).toBeTruthy();
+      expect(_id).toEqual(user._id);
+    });
+
+    test('[PATCH] Обновляет имя и почту ', async () => {
+      const user = JSON.parse(process.env.USER);
+      const response = await patchUser(user).set('Authorization', `${process.env.TOKEN}`);
+      const data = response.toJSON();
+      const instance = JSON.parse(data.text);
+      expect(response.headers['content-type']).toMatch('application/json');
+      expect(response.ok).toBeTruthy();
+      expect(instance.name).toEqual(editedUserPayload.name);
+      expect(instance.email).toEqual(editedUserPayload.email);
+    });
+
+    test('[PATCH] Попытка передать невалидный id возвращает статус 400 ', async () => {
+      const response = await patchNonHexId().set('Authorization', `${process.env.TOKEN}`);
+      expect(response.status).toBe(400);
+    });
+
+    test('[PATCH] Попытка передать короткий id возвращает статус 400 ', async () => {
+      const response = await patchShortId().set('Authorization', `${process.env.TOKEN}`);
+      expect(response.status).toBe(400);
+    });
+
+    test('[PATCH] Попытка передать несуществующий id возвращает статус 404 ', async () => {
+      const response = await patchNonExistandId().set('Authorization', `${process.env.TOKEN}`);
+      expect(response.status).toBe(404);
     });
   });
 });

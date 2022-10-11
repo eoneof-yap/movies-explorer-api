@@ -34,8 +34,9 @@ export const validateLogin = celebrate({
 
 export const validateUpdate = celebrate({
   body: Joi.object().keys({
+    id: validId,
+    name: validUserName,
     email: validEmail,
-    password: validPassword,
   }),
 });
 

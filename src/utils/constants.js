@@ -38,5 +38,5 @@ export const WRONG_ID_TXT = 'Неверный идентификатор';
 // misc
 export const TOKEN_PREFIX = 'Bearer ';
 export const SALT_ROUNDS = 10;
-export const JWT_EXPIRATION_TIMEOUT = '7d';
+export const JWT_EXPIRATION_TIMEOUT = '3600000';
 export const DB_DUPLICATE_KEY_CODE = 11000;

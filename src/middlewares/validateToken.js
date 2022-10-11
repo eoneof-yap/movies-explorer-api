@@ -14,7 +14,7 @@ const JWT_SECRET = process.env.NODE_ENV === 'production'
   : '123-ABC-XYZ';
 
 /**
- * Validate token and hange request header
+ * Validate token and change request header
  * @returns {{ req: { user: { _id: string, exp: number, iat: number }} }} payload
  */
 export default function validateToken(req, res, next) {

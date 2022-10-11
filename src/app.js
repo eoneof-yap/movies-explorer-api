@@ -25,6 +25,7 @@ app.use(requestLogger);
 
 app.use(routes); // main routes
 
+// TODO: catch unauthorized 404s
 app.use(notFound); // 404
 
 app.use(errors()); // catch Joi validation errors

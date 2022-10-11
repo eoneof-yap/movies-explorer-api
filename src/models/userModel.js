@@ -3,11 +3,11 @@ import isEmail from 'validator/lib/isEmail.js';
 import bcrypt from 'bcryptjs';
 
 import {
-  USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT,
-  PASSWORD_MIN_TXT,
+  USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT, PASSWORD_MIN_TXT,
 } from '../utils/constants.js';
 
 import UnauthorizedError from '../errors/UnauthorizedError.js';
+import ForbiddenError from '../errors/ForbiddenError.js';
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -33,9 +33,10 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.statics.findUserByCredentials = async function checkCreds(email, password) {
-  const user = await this.findOne({ email }).orFail(() => {
-    throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
-  }).select('+password');
+  const user = await this.findOne({ email }).select('+password');
+  if (!user) {
+    throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
+  }
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
     throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);

@@ -9,8 +9,16 @@ import authRoute from './authRoute.js';
 import userRoute from './userRoute.js';
 import authorize from '../middlewares/authorize.js';
 import { validateMovieInfo } from '../middlewares/validators.js';
+// import notFound from '../controllers/notFoundController.js';
 
 const routes = express();
+
+// routes.all('*', (req, res, next) => {
+//   if (req.url === '/' || req.url === REGISTER_PATH || req.url === USERS_PATH) {
+//     return next();
+//   }
+//   return notFound(req, res, next);
+// });
 
 // public routesdd
 routes.use(authRoute);

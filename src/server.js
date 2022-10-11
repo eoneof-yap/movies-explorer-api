@@ -1,5 +1,6 @@
 import process from 'process';
 import mongoose from 'mongoose';
+import { errors } from 'celebrate';
 
 import app from './app.js';
 
@@ -31,6 +32,7 @@ const {
 })();
 
 // error handling
+app.use(errors());
 app.use(errorLogger);
 app.use(globalErrorHandler);
 process.on('uncaughtException', (err, origin) => {

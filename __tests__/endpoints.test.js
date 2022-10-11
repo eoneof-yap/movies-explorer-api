@@ -104,6 +104,7 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
     test('[POST] Попытка передать невалидные данные возвращает статус 400 ', async () => {
       const response = await createInvalidUser();
       const data = response.toJSON();
+      console.log(data);
       expect(data.status).toBe(400);
     });
 
@@ -167,7 +168,6 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       await createUser();
       const response = await login();
       const data = response.toJSON();
-      console.log(data);
       const { token } = JSON.parse(data.text);
       expect(response.headers['content-type']).toMatch('application/json');
       expect(response.status).toBe(200);
@@ -176,9 +176,9 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       process.env.USER = data.text; // put returned value to the global scope
     });
 
-    test('[POST] Неудачный вход возвращает статус 401', async () => {
+    test('[POST] Неудачный вход возвращает статус 400', async () => {
       const response = await invalidlogin();
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(400);
     });
 
     test('[POST] Неверный email возвращает статус 403', async () => {

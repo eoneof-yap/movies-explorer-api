@@ -6,13 +6,15 @@ import userModel from '../models/userModel.js';
 
 import ConflictError from '../errors/ConflictError.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import NotFoundError from '../errors/NotFoundError.js';
+import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 import {
   CREATED, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE, JWT_EXPIRATION_TIMEOUT,
   EMAIL_EXIST_TXT, BAD_REQUEST_TXT, USER_NOT_FOUND_TXT, AUTH_REQUIRED_TXT,
 } from '../utils/constants.js';
-import NotFoundError from '../errors/NotFoundError.js';
-import UnauthorizedError from '../errors/UnauthorizedError.js';
+
+import validationerrHandler from '../utils/utils.js';
 
 dotenv.config();
 
@@ -36,18 +38,15 @@ export async function createUser(req, res, next) {
     delete user.password;
     delete user.__v;
 
-    res.status(CREATED).send(user); // TODO: hide password and '__v'
+    res.status(CREATED).send(user);
   } catch (err) {
-    if (err.name === 'ValidationError') {
-      next(new BadRequestError(`${BAD_REQUEST_TXT}: ${err.errors.name}`));
-      return;
-    }
+    validationerrHandler(err, next);
 
-    if (err.code === DB_DUPLICATE_KEY_CODE) {
+    if (err.code === DB_DUPLICATE_KEY_CODE) { // mongo err
       next(new ConflictError(EMAIL_EXIST_TXT));
       return;
     }
-    next(err);
+    next();
   }
 }
 
@@ -63,10 +62,13 @@ export async function getUser(req, res, next) {
     });
     res.send(user);
   } catch (err) {
+    validationerrHandler(err, next);
+
     if (err.kind === 'ObjectId') {
       next(new BadRequestError(BAD_REQUEST_TXT));
+      return;
     }
-    next(err);
+    next();
   }
 }
 
@@ -86,10 +88,13 @@ export async function updateUser(req, res, next) {
     });
     res.send(user);
   } catch (err) {
+    validationerrHandler(err, next);
+
     if (err.kind === 'ObjectId') {
       next(new BadRequestError(BAD_REQUEST_TXT));
+      return;
     }
-    next(err);
+    next();
   }
 }
 
@@ -103,12 +108,17 @@ export async function login(req, res, next) {
   try {
     // TODO: save JWT to cookie
     const user = await User.findUserByCredentials(email, password);
+    if (!user) {
+      next(new BadRequestError(BAD_REQUEST_TXT));
+    }
     const token = await jwt.sign({ _id: user._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRATION_TIMEOUT,
     });
 
     res.send({ token });
   } catch (err) {
-    next(err);
+    validationerrHandler(err, next);
+
+    next();
   }
 }

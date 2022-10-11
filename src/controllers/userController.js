@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 import userModel from '../models/userModel.js';
@@ -10,7 +9,7 @@ import NotFoundError from '../errors/NotFoundError.js';
 import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 import {
-  CREATED, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE, JWT_EXPIRATION_TIMEOUT,
+  CREATED, DB_DUPLICATE_KEY_CODE, JWT_EXPIRATION_TIMEOUT,
   EMAIL_EXIST_TXT, BAD_REQUEST_TXT, USER_NOT_FOUND_TXT, AUTH_REQUIRED_TXT,
 } from '../utils/constants.js';
 
@@ -31,13 +30,7 @@ const JWT_SECRET = process.env.NODE_ENV === 'production'
 export async function createUser(req, res, next) {
   const { name, email, password } = req.body;
   try {
-    const hash = await bcrypt.hash(password, SALT_ROUNDS);
-    let user = await User.create({ name, email, password: hash });
-
-    user = user.toObject();
-    delete user.password;
-    delete user.__v;
-
+    const user = await User.createNew({ name, email, password });
     res.status(CREATED).send(user);
   } catch (err) {
     validationerrHandler(err, next);
@@ -46,7 +39,7 @@ export async function createUser(req, res, next) {
       next(new ConflictError(EMAIL_EXIST_TXT));
       return;
     }
-    next();
+    next(err);
   }
 }
 
@@ -60,6 +53,7 @@ export async function getUser(req, res, next) {
     const user = await User.findById(id).orFail(() => {
       next(new UnauthorizedError(AUTH_REQUIRED_TXT));
     });
+
     res.send(user);
   } catch (err) {
     validationerrHandler(err, next);
@@ -68,7 +62,7 @@ export async function getUser(req, res, next) {
       next(new BadRequestError(BAD_REQUEST_TXT));
       return;
     }
-    next();
+    next(err);
   }
 }
 
@@ -86,7 +80,8 @@ export async function updateUser(req, res, next) {
     ).orFail(() => {
       next(new NotFoundError(USER_NOT_FOUND_TXT));
     });
-    res.send(user);
+
+    res.send({ name: user.name, email: user.email });
   } catch (err) {
     validationerrHandler(err, next);
 
@@ -94,7 +89,7 @@ export async function updateUser(req, res, next) {
       next(new BadRequestError(BAD_REQUEST_TXT));
       return;
     }
-    next();
+    next(err);
   }
 }
 
@@ -107,9 +102,10 @@ export async function login(req, res, next) {
 
   try {
     // TODO: save JWT to cookie
-    const user = await User.findUserByCredentials(email, password);
+    const user = await User.authorize(email, password);
     if (!user) {
       next(new BadRequestError(BAD_REQUEST_TXT));
+      return;
     }
     const token = await jwt.sign({ _id: user._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRATION_TIMEOUT,
@@ -119,6 +115,6 @@ export async function login(req, res, next) {
   } catch (err) {
     validationerrHandler(err, next);
 
-    next();
+    next(err);
   }
 }

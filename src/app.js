@@ -1,5 +1,6 @@
 import express from 'express';
 import process from 'process';
+import { errors } from 'celebrate';
 
 import getVirtualDbInstance from '../__tests__/utils/testHelpers.js';
 
@@ -25,5 +26,7 @@ app.use(requestLogger);
 app.use(routes); // main routes
 
 app.use(notFound); // 404
+
+app.use(errors()); // catch Joi validation errors
 
 export default app; // to server.js

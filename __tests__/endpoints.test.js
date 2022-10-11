@@ -95,10 +95,10 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       expect(JSON.parse(process.env.USER)).toEqual(expectedUserPayload);
     });
 
-    test('[POST] Попытка передать пустой объект возвращает статус 500 ', async () => {
+    test('[POST] Попытка передать пустой объект возвращает статус 400', async () => {
       const response = await createEmptyUser();
       const data = response.toJSON();
-      expect(data.status).toBe(500);
+      expect(data.status).toBe(400);
     });
 
     test('[POST] Попытка передать невалидные данные возвращает статус 400 ', async () => {

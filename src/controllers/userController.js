@@ -75,7 +75,7 @@ export async function updateUser(req, res, next) {
 // export async function login(req, res, next) {
 //   const { email, password } = req.body;
 //   try {
-//     const token = await User.authorize(email, password); // TODO: save JWT to cookie
+//     const token = await User.authorize(email, password);
 //     return res.send({ token });
 //   } catch (err) {
 //     next(err);
@@ -90,7 +90,7 @@ export async function updateUser(req, res, next) {
 export async function login(req, res, next) {
   const { email, password } = req.body;
   try {
-    const token = await User.authorize(email, password); // TODO: save JWT to cookie
+    const token = await User.authorize(email, password);
     res.cookie('jwt', token, {
       maxAge: JWT_EXPIRATION_TIMEOUT,
       httpOnly: true,

@@ -76,7 +76,6 @@ afterAll(async () => {
 
 describe('ОБЩЕЕ', () => {
   describe('/fake-path', () => {
-    // FIXME: requires auth???
     test('[GET] Обращение по несуществующему пути без авторизации возвращает статус 401 ', async () => {
       const response = await request.get('/fake-path');
       const data = response.toJSON();

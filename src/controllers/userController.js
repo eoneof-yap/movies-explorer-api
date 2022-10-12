@@ -3,11 +3,13 @@ import userModel from '../models/userModel.js';
 import NotFoundError from '../errors/NotFoundError.js';
 
 import {
-  CREATED, JWT_EXPIRATION_TIMEOUT, USER_NOT_FOUND_TXT,
+  AUTH_REQUIRED_TXT,
+  CREATED, JWT_EXPIRATION_TIMEOUT, LOGIN_SUCCESFUL, USER_NOT_FOUND_TXT,
 } from '../utils/constants.js';
 
 import { validationErrorHandler, objectIdErrorHanler } from '../utils/utils.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 const User = userModel;
 
@@ -95,9 +97,11 @@ export async function login(req, res, next) {
       maxAge: JWT_EXPIRATION_TIMEOUT,
       httpOnly: true,
       sameSite: true,
+      signed: true,
     });
+    return res.send({ message: LOGIN_SUCCESFUL });
   } catch (err) {
     next(err);
   }
-  return next();
+  next();
 }

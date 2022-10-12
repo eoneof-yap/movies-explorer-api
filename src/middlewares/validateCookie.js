@@ -1,17 +1,8 @@
-import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
-
 import {
   AUTH_REQUIRED_TXT,
 } from '../utils/constants.js';
 
 import UnauthorizedError from '../errors/UnauthorizedError.js';
-
-dotenv.config();
-
-const JWT_SECRET = process.env.NODE_ENV === 'production'
-  ? process.env.JWT_SECRET
-  : '123-ABC-XYZ';
 
 // /**
 //  * Validate token and change request header
@@ -40,15 +31,14 @@ const JWT_SECRET = process.env.NODE_ENV === 'production'
  * @returns {{ req: { user: { _id: string, exp: number, iat: number }} }} payload
  */
 export default function validateCookie(req, res, next) {
-  const cookie = req.cookies.jwt;
-  let payload;
+  const cookie = req.signedCookies;
   try {
-    if (!cookie) {
-      return next(new UnauthorizedError(AUTH_REQUIRED_TXT));
-    }
+    if (!cookie) return next(new UnauthorizedError(AUTH_REQUIRED_TXT));
 
-    payload = jwt.verify(cookie, JWT_SECRET);
-    req.user = payload;
+    // const payload = jwt.verify(cookie, JWT_SECRET);
+    // if (!payload) return next(new UnauthorizedError(TOKEN_EXPIRED_TXT));
+    // req.user = payload
+    return next();
   } catch (err) {
     next(err);
   }

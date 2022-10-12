@@ -10,9 +10,13 @@ import notFound from './controllers/notFoundController.js';
 
 import authRoute from './routes/authRoute.js';
 import userRoute from './routes/userRoute.js';
-import validateCookie from './middlewares/validateToken.js';
+import validateCookie from './middlewares/validateCookie.js';
 
 const { NODE_ENV = 'production' } = process.env;
+
+const JWT_SECRET = process.env.NODE_ENV === 'production'
+  ? process.env.JWT_SECRET
+  : '123-ABC-XYZ';
 
 // connect to virtual DB while testing
 if (NODE_ENV === 'testing') {
@@ -24,7 +28,7 @@ const app = express();
 app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cookieParser());
+app.use(cookieParser(JWT_SECRET));
 
 app.use(requestLogger);
 

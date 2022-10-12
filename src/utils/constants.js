@@ -21,7 +21,7 @@ export const CURRENT_USER_PATH = `${USERS_PATH}/me`;
 export const MOVIES_PATH = '/movies';
 export const MOVIE_ID_PATH = `${MOVIES_PATH}/:id`;
 
-// error messages
+// status messages
 export const BAD_REQUEST_TXT = 'Ошибка в запросе';
 export const SERVER_ERROR_TXT = 'Сервер не смог обработать запрос';
 export const PATH_NOT_FOUND_TXT = 'Путь не найден';
@@ -34,9 +34,9 @@ export const MOVIE_DELETED_TXT = 'Фильм удален';
 export const MOVIE_NOT_FOUND_TXT = 'Фильм не найден';
 export const MOVIE_RESTRICTED_TXT = 'Нельзя удалять чужие фильмы';
 export const WRONG_ID_TXT = 'Неверный идентификатор';
+export const LOGIN_SUCCESFUL = 'Успешная авторизация';
 
 // misc
-export const TOKEN_PREFIX = 'Bearer ';
 export const SALT_ROUNDS = 10;
 export const JWT_EXPIRATION_TIMEOUT = '3600000';
 export const DB_DUPLICATE_KEY_CODE = 11000;

@@ -23,6 +23,14 @@ dotenv.config();
 jest.setTimeout(30000);
 const request = supertest(app);
 
+const parseCookie = (response) => {
+  const data = response.toJSON();
+  const cookies = data.header['set-cookie'];
+  const jwt = cookies.toString().split(' ');
+  const token = jwt[0].match(/(?<=jwt=).+(?=;)/ig);
+  return token;
+};
+
 const createLongUser = () => request.post(REGISTER_PATH).send(longUserPayload).set('Content-Type', 'application/json');
 const createInvalidUser = () => request.post(REGISTER_PATH).send(invalidUserPayload).set('Content-Type', 'application/json');
 const createEmptyUser = () => request.post(REGISTER_PATH).send({}).set('Content-Type', 'application/json');
@@ -38,9 +46,7 @@ const wrongPasswordLogin = () => request.post(LOGIN_PATH).send(wrongPasswordPayl
 const wrongEmailLogin = () => request.post(LOGIN_PATH).send(wrongEmailPayload).set('Content-Type', 'application/json');
 const login = async () => {
   const response = await request.post(LOGIN_PATH).send(loginPayload).set('Content-Type', 'application/json');
-  const data = response.toJSON();
-  const { token } = JSON.parse(data.text);
-  process.env.TOKEN = `Bearer ${token}`;
+  process.env.TOKEN = { token: parseCookie(response) };
   return response;
 };
 
@@ -76,21 +82,21 @@ afterAll(async () => {
 
 describe('ОБЩЕЕ', () => {
   describe('/fake-path', () => {
-    test('[GET] Обращение по несуществующему пути без авторизации возвращает статус 401 ', async () => {
+    test('[GET] Обращение по несуществующему роуту возвращает статус 404 ', async () => {
       const response = await request.get('/fake-path');
       const data = response.toJSON();
-      expect(data.status).toBe(401);
+      expect(data.status).toBe(404);
     });
 
-    test('[GET] Обращение к защищенному роуту без авторизации возвращает статус 401 ', async () => {
+    test('[GET] Обращение к защищенному роуту пользователя без авторизации возвращает статус 400 ', async () => {
       const response = await request.get(CURRENT_USER_PATH);
       const data = response.toJSON();
-      expect(data.status).toBe(401);
+      expect(data.status).toBe(400);
     });
-    test('[GET] Обращение к защищенному роуту без авторизации возвращает статус 401 ', async () => {
+    test.skip('[GET] Обращение к защищенному роуту фильма без авторизации возвращает статус 400 ', async () => {
       const response = await request.get(MOVIES_PATH);
       const data = response.toJSON();
-      expect(data.status).toBe(401);
+      expect(data.status).toBe(400);
     });
   });
 });
@@ -138,10 +144,10 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
   });
 
   describe('/signin', () => {
-    test('[POST] Успешный вход возвращает статус 200 и объект со строкой токена ', async () => {
+    test('[POST] Успешный вход возвращает статус 200 и токен в куках ', async () => {
       await createUser();
       const response = await login();
-      expect(response.headers['content-type']).toMatch('application/json');
+      expect(response.headers['set-cookie']).toBeTruthy();
       expect(response.status).toBe(200);
       expect(typeof process.env.TOKEN).toBe('string');
     });

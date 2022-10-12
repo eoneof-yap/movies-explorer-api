@@ -3,13 +3,11 @@ import userModel from '../models/userModel.js';
 import NotFoundError from '../errors/NotFoundError.js';
 
 import {
-  AUTH_REQUIRED_TXT,
   CREATED, JWT_EXPIRATION_TIMEOUT, LOGIN_SUCCESFUL, USER_NOT_FOUND_TXT,
 } from '../utils/constants.js';
 
 import { validationErrorHandler, objectIdErrorHanler } from '../utils/utils.js';
 import BadRequestError from '../errors/BadRequestError.js';
-import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 const User = userModel;
 
@@ -70,24 +68,9 @@ export async function updateUser(req, res, next) {
   return next();
 }
 
-// /**
-//  * Login
-//  * @returns {{ token: string }} JWT token
-//  */
-// export async function login(req, res, next) {
-//   const { email, password } = req.body;
-//   try {
-//     const token = await User.authorize(email, password);
-//     return res.send({ token });
-//   } catch (err) {
-//     next(err);
-//   }
-//   return next();
-// }
-
 /**
- * Login
- * @returns {{ token: string }} JWT token
+ * Verify pasword and set cookies response header
+ * @returns { { message: success string, res: { headers: {'set-cookies': string }} } signed cookie
  */
 export async function login(req, res, next) {
   const { email, password } = req.body;
@@ -103,5 +86,5 @@ export async function login(req, res, next) {
   } catch (err) {
     next(err);
   }
-  next();
+  return next();
 }

@@ -2,23 +2,17 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import isEmail from 'validator/lib/isEmail.js';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 
 import {
   USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT,
   PASSWORD_MIN_TXT, BAD_REQUEST_TXT, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE,
-  EMAIL_EXIST_TXT, JWT_EXPIRATION_TIMEOUT,
+  EMAIL_EXIST_TXT,
 } from '../utils/constants.js';
 
 import ForbiddenError from '../errors/ForbiddenError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
 import { validationErrorHandler } from '../utils/utils.js';
-import NotFoundError from '../errors/NotFoundError.js';
-
-const JWT_SECRET = process.env.NODE_ENV === 'production'
-  ? process.env.JWT_SECRET
-  : '123-ABC-XYZ';
 
 dotenv.config();
 

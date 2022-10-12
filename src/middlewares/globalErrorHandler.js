@@ -11,8 +11,7 @@ export default function globalErrorHandler(err, req, res, next) {
 
   res.status(statusCode).json(
     {
-      error: statusCode === SERVER_ERROR ? SERVER_ERROR_TXT : message,
-      stack: NODE_ENV !== 'development' ? err.stack : '',
+      error: `${statusCode === SERVER_ERROR ? SERVER_ERROR_TXT : message}${NODE_ENV !== 'production' ? err.stack : ''}`,
     },
   );
 

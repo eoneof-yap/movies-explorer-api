@@ -93,7 +93,7 @@ describe('ОБЩЕЕ', () => {
       const data = response.toJSON();
       expect(data.status).toBe(400);
     });
-    test.skip('[GET] Обращение к защищенному роуту фильма без авторизации возвращает статус 400 ', async () => {
+    test('[GET] Обращение к защищенному роуту фильма без авторизации возвращает статус 400 ', async () => {
       const response = await request.get(MOVIES_PATH);
       const data = response.toJSON();
       expect(data.status).toBe(400);
@@ -218,20 +218,26 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
 
 describe('ФИЛЬМЫ', () => {
   describe('/movies', () => {
-    test.todo('[POST] Cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameRU, nameEN и thumbnail, movieId ');
+    test.todo('[POST] cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameru, nameen и thumbnail, movieid ');
 
-    test.skip('[GET] Получает список фильмов ', async () => {
-      const response = await request.get(MOVIES_PATH);
-      const data = response.toJSON();
-      expect(data.status).toBe(201);
+    test('[GET] получает список фильмов ', async () => {
+      const response = await request.get(MOVIES_PATH).set('Cookie', `${process.env.TOKEN}`);
+      const data = response.tojson();
+      expect(data.status).tobe(200);
     });
 
-    test.skip('[GET] В ответе приходит массив ', async () => {
-      expect(/* data */).toEqual(expect.arrayContaining([]));
+    test('[GET] в ответе приходит массив ', async () => {
+      const response = await request.delete(MOVIES_PATH).set('Cookie', `${process.env.TOKEN}`);
+      const data = response.tojson();
+      expect(data).toequal(expect.arraycontaining([]));
     });
   });
 
   describe('/movies/id', () => {
-    test.todo('[DELETE] Удаляет сохранённый фильм по id ');
+    test('[DELETE] удаляет сохранённый фильм по id ', async () => {
+      const response = await request.delete(`${MOVIES_PATH}/634214006c025e0ffe6aab46`).set('Cookie', `${process.env.TOKEN}`);
+      const data = response.tojson();
+      expect(data.status).tobe(200);
+    });
   });
 });

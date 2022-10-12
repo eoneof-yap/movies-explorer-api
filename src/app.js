@@ -8,9 +8,9 @@ import getVirtualDbInstance from '../__tests__/utils/testHelpers.js';
 import { requestLogger } from './middlewares/loggers.js';
 import notFound from './controllers/notFoundController.js';
 
-import authRoute from './routes/authRoute.js';
-import userRoute from './routes/userRoute.js';
+import publicroutes from './routes/public.routes.js';
 import validateCookie from './middlewares/validateCookie.js';
+import privateRoutes from './routes/private.routes.js';
 
 const { NODE_ENV = 'production' } = process.env;
 
@@ -33,15 +33,12 @@ app.use(cookieParser(JWT_SECRET));
 app.use(requestLogger);
 
 // public routes
-app.use(authRoute);
-
-// app.use(routes); // main routes
+app.use(publicroutes);
 
 // protected routes
 app.use(validateCookie);
-app.use(userRoute);
+app.use(privateRoutes);
 
-// TODO: catch unauthorized 404s
 app.use(notFound); // 404
 app.use(errors()); // catch Joi validation errors
 

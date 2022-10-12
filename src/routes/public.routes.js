@@ -1,4 +1,5 @@
 import express from 'express';
+import { errors } from 'celebrate';
 
 import { REGISTER_PATH, LOGIN_PATH } from '../utils/constants.js';
 import { createUser, login } from '../controllers/userController.js';
@@ -8,5 +9,7 @@ const authRoute = express.Router();
 
 authRoute.post(REGISTER_PATH, validateRegister, createUser)
   .post(LOGIN_PATH, validateLogin, login);
+
+authRoute.use(errors());
 
 export default authRoute;

@@ -1,20 +1,20 @@
-import movieModel from '../models/movieModel.js';
+import NotFoundError from '../errors/NotFoundError.js';
+import movieModel from '../models/movie.model.js';
 
-import { validationErrorHandler, objectIdErrorHanler } from '../utils/utils.js';
-import BadRequestError from '../errors/BadRequestError.js';
 import { CREATED, MOVIE_NOT_FOUND_TXT } from '../utils/constants.js';
 
 const Movie = movieModel;
 
 /**
- * Register a movie
- * @returns {{ movie: { _id: string, name: string, email: string } }} movie instance
+ * Add a movie to favorites list
+ * @param { object } movieProps movie properties
+ * @returns { movieEntry } movie entry
  */
 export async function createMovie(req, res, next) {
-  const { movieData } = req.body;
+  const { movieProps } = req.body;
   try {
-    const movie = await Movie.createNew({ movieData });
-    res.status(CREATED).send(movie);
+    const movieEntry = await Movie.createNew(movieProps);
+    return res.status(CREATED).send(movieEntry);
   } catch (err) {
     next(err);
   }
@@ -23,24 +23,22 @@ export async function createMovie(req, res, next) {
 
 /**
  * Get current movie info
- * @returns {{ movie: { _id: string, name: string, email: string } }} movie instance
+ * @returns {Object[]}  movies list
  */
 export async function getMovies(req, res, next) {
-  const { id } = req.body;
   try {
-    const movie = await Movie.findById(id);
-    if (!movie) return next(new BadRequestError(MOVIE_NOT_FOUND_TXT));
-
-    return res.send(movie);
+    const moviesList = await Movie.find({});
+    if (!moviesList) return next(new NotFoundError(MOVIE_NOT_FOUND_TXT));
+    return res.send(moviesList);
   } catch (err) {
-    validationErrorHandler(err, next);
-    objectIdErrorHanler(err, next);
     next(err);
   }
   return next();
 }
 
 export async function deleteMovieById(req, res, next) {
-  res.send('deletemoviebyid');
+  const { id } = req.params;
+  const movieEntry = await Movie.findById(id);
+  res.send(movieEntry);
   return next();
 }

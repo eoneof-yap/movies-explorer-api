@@ -45,31 +45,36 @@ export const expectedUserPayload = {
 };
 
 export const moviePayload = {
-  country: 'Fake Country',
-  director: 'Fake Director',
-  duration: '000',
-  year: '1970',
-  description: 'faker fakes kafing fakes faking fakes',
-  image: 'https://website.com/fake-image.jpg',
-  trailer: 'https://ewebsitecom/fake-trailer.mp4',
-  nameRU: 'Фейкин фейк',
-  nameEN: 'Fakin\' fake',
-  thumbnail: 'https://website.com/fake-thumb.jpg',
-  movieId: '1234567890',
+  movieProps: {
+    movieId: '634214006c025e0ffe6aab46',
+    nameEN: 'Fakin fake',
+    nameRU: 'Фейкин фейк',
+    year: '1970',
+    country: 'Fakestan',
+    director: 'Fake Faker',
+    duration: '000',
+    description: 'faker fakes fakin fakes faking fakes',
+    image: 'https://website.com/fake-image.jpg',
+    trailer: 'https://website.com/fake-trailer.mp4',
+    thumbnail: 'https://website.com/fake-thumb.jpg',
+    owner: '634214006c025e0ffe6aab46',
+  },
 };
 
 export const expectedMoviePayload = {
+  movieId: expect.any(String),
+  nameEN: 'Fakin fake',
+  nameRU: 'Фейкин фейк',
+  year: '1970',
   country: 'Fakestan',
   director: 'Fake Faker',
-  duration: '000',
-  year: '1970',
-  description: 'faker fakes kafing fakes faking fakes',
+  duration: expect.any(Number),
+  description: 'faker fakes fakin fakes faking fakes',
   image: 'https://website.com/fake-image.jpg',
   trailer: 'https://website.com/fake-trailer.mp4',
-  nameRU: 'Фейкин фейк',
-  nameEN: 'Fakin\' fake',
   thumbnail: 'https://website.com/fake-thumb.jpg',
-  movieId: '1234567890',
+  owner: expect.any(String),
+  _id: expect.any(String),
 };
 
 export const shortIdPayload = {

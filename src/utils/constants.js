@@ -29,6 +29,7 @@ export const AUTH_REQUIRED_TXT = 'Необходима авторизация';
 export const TOKEN_EXPIRED_TXT = 'Токен недействителен';
 export const WRONG_CREDENTIALS_TXT = 'Неправильные почта или пароль';
 export const EMAIL_EXIST_TXT = 'Пользователь с такой почтой уже существует';
+export const MOVIE_EXIST_TXT = 'Такой фильм уже есть в списке';
 export const USER_NOT_FOUND_TXT = 'Пользователь не найден';
 export const MOVIE_DELETED_TXT = 'Фильм удален';
 export const MOVIE_NOT_FOUND_TXT = 'Фильм не найден';

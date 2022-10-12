@@ -30,14 +30,10 @@ import UnauthorizedError from '../errors/UnauthorizedError.js';
  * Validate token and change request header
  * @returns {{ req: { user: { _id: string, exp: number, iat: number }} }} payload
  */
-export default function validateCookie(req, res, next) {
-  const cookie = req.signedCookies;
+export default function validateCookie(err, req, res, next) {
+  const { jwt } = req.signedCookies;
   try {
-    if (!cookie) return next(new UnauthorizedError(AUTH_REQUIRED_TXT));
-
-    // const payload = jwt.verify(cookie, JWT_SECRET);
-    // if (!payload) return next(new UnauthorizedError(TOKEN_EXPIRED_TXT));
-    // req.user = payload
+    if (!jwt) return (new UnauthorizedError(AUTH_REQUIRED_TXT));
     return next();
   } catch (err) {
     next(err);

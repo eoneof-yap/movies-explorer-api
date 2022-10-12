@@ -1,4 +1,4 @@
-import userModel from '../models/userModel.js';
+import userModel from '../models/user.model.js';
 
 import NotFoundError from '../errors/NotFoundError.js';
 
@@ -18,8 +18,8 @@ const User = userModel;
 export async function createUser(req, res, next) {
   const { name, email, password } = req.body;
   try {
-    const user = await User.createNew({ name, email, password });
-    res.status(CREATED).send(user);
+    const userEntry = await User.createNew({ name, email, password });
+    res.status(CREATED).send(userEntry);
   } catch (err) {
     next(err);
   }
@@ -28,15 +28,15 @@ export async function createUser(req, res, next) {
 
 /**
  * Get current user info
- * @returns {{ user: { _id: string, name: string, email: string } }} user instance
+ * @returns {{ user: { _id: string, name: string, email: string } }} user instanc
  */
 export async function getUser(req, res, next) {
   const { id } = req.body;
   try {
-    const user = await User.findById(id);
-    if (!user) return next(new BadRequestError(USER_NOT_FOUND_TXT));
+    const userEntry = await User.findById(id);
+    if (!userEntry) return next(new BadRequestError(USER_NOT_FOUND_TXT));
 
-    return res.send(user);
+    return res.send(userEntry);
   } catch (err) {
     validationErrorHandler(err, next);
     objectIdErrorHanler(err, next);
@@ -52,14 +52,14 @@ export async function getUser(req, res, next) {
 export async function updateUser(req, res, next) {
   const { id, name, email } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(
+    const userEntry = await User.findByIdAndUpdate(
       id,
       { name, email },
       { new: true, runValidators: true },
     );
-    if (!user) return next(new NotFoundError(USER_NOT_FOUND_TXT));
+    if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
 
-    return res.send({ name: user.name, email: user.email });
+    return res.send({ name: userEntry.name, email: userEntry.email });
   } catch (err) {
     validationErrorHandler(err, next);
     objectIdErrorHanler(err, next);
@@ -75,14 +75,14 @@ export async function updateUser(req, res, next) {
 export async function login(req, res, next) {
   const { email, password } = req.body;
   try {
-    const token = await User.authorize(email, password);
-    res.cookie('jwt', token, {
+    const user = await User.authorize(email, password);
+    return res.cookie('jwt', user._id, {
       maxAge: JWT_EXPIRATION_TIMEOUT,
       httpOnly: true,
       sameSite: true,
       signed: true,
-    });
-    return res.send({ message: LOGIN_SUCCESFUL });
+    })
+      .send({ message: LOGIN_SUCCESFUL });
   } catch (err) {
     next(err);
   }

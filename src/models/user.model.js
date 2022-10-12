@@ -12,6 +12,7 @@ import {
 import ForbiddenError from '../errors/ForbiddenError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
+import NotFoundError from '../errors/NotFoundError.js';
 import { validationErrorHandler } from '../utils/utils.js';
 
 dotenv.config();
@@ -62,16 +63,12 @@ userSchema.statics.authorize = async function authorize(email, password) {
   // let token;
   try {
     const user = await this.findOne({ email }).select('+password');
-    // if (!user) throw new NotFoundError(BAD_REQUEST_TXT);
+    if (!user) throw new NotFoundError(BAD_REQUEST_TXT);
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
 
-    // token = await jwt.sign({ _id: user._id }, JWT_SECRET, {
-    //   expiresIn: JWT_EXPIRATION_TIMEOUT,
-    // });
-    // if (!token) throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
-    return user.id;
+    return user;
   } catch (err) {
     validationErrorHandler(err);
     throw new ForbiddenError(WRONG_CREDENTIALS_TXT);

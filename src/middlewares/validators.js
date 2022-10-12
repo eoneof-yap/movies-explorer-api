@@ -2,7 +2,7 @@ import { celebrate, Joi } from 'celebrate';
 
 // common config
 const validUrl = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/i;
-const validRequiredString = Joi.string().required();
+const validString = Joi.string().required();
 const validId = Joi.string().hex().length(24).alphanum();
 const validnumber = Joi.number();
 
@@ -42,18 +42,19 @@ export const validateUpdate = celebrate({
 
 export const validateMovieInfo = celebrate({
   body: Joi.object().keys({
-    country: validRequiredString,
-    deirector: validRequiredString,
-    duration: validnumber,
-    year: validRequiredString,
-    description: validRequiredString,
-    image: validUrl,
-    trailerLink: validUrl,
-    thumbnail: validUrl,
-    owner: validId,
-    movieId: validId,
-    nameRU: validRequiredString,
-    nameEn: validRequiredString,
+    movieProps: Joi.object().keys({
+      movieId: validString,
+      nameEN: validString,
+      nameRU: validString,
+      year: validString,
+      country: validString,
+      director: validString,
+      duration: validnumber,
+      description: validString,
+      image: validUrl,
+      trailer: validUrl,
+      thumbnail: validUrl,
+      owner: validId,
+    }),
   }),
-
 });

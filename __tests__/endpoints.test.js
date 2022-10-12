@@ -11,7 +11,8 @@ import * as db from './utils/virtualMongoServer.js';
 import {
   loginPayload, userPayload, invalidUserPayload,
   expectedUserPayload, editedUserPayload, longUserPayload,
-  shortIdPayload, nonHexIdPayload, nonExistantIdPayload, wrongPasswordPayload, wrongEmailPayload,
+  shortIdPayload, nonHexIdPayload, nonExistantIdPayload, wrongPasswordPayload,
+  wrongEmailPayload, moviePayload, expectedMoviePayload,
 } from './fixtures/mocks.js';
 import {
   CURRENT_USER_PATH, LOGIN_PATH, MOVIES_PATH, REGISTER_PATH,
@@ -212,32 +213,43 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
     test('[GET] Попытка перейти по несуществующему защищенному пути возвращает 404', async () => {
       const response = await request.get('/wrong-path').set('Authorization', `${process.env.TOKEN}`);
       expect(response.status).toBe(404);
+
+      await db.clearDatabase();
     });
   });
 });
 
 describe('ФИЛЬМЫ', () => {
   describe('/movies', () => {
-    test.todo('[POST] cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameru, nameen и thumbnail, movieid ');
+    test('[POST] cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameRU, nameEN и thumbnail, movieid', async () => {
+      await createUser();
+      await login();
+      const response = await request.post(MOVIES_PATH).send(moviePayload).set('Cookie', `${process.env.TOKEN}`);
+      const data = response.toJSON();
+      console.log(data.text);
+      expect(JSON.parse(data.text)).toEqual(expectedMoviePayload);
+      expect(data.status).toBe(201);
+    });
 
     test('[GET] получает список фильмов ', async () => {
       const response = await request.get(MOVIES_PATH).set('Cookie', `${process.env.TOKEN}`);
-      const data = response.tojson();
-      expect(data.status).tobe(200);
+      const data = response.toJSON();
+      expect(data.status).toBe(200);
     });
 
     test('[GET] в ответе приходит массив ', async () => {
       const response = await request.delete(MOVIES_PATH).set('Cookie', `${process.env.TOKEN}`);
-      const data = response.tojson();
-      expect(data).toequal(expect.arraycontaining([]));
+      const data = response.toJSON();
+      console.log(data.text);
+      expect(data.text).toEqual(expect.arrayContaining([]));
     });
   });
 
   describe('/movies/id', () => {
     test('[DELETE] удаляет сохранённый фильм по id ', async () => {
-      const response = await request.delete(`${MOVIES_PATH}/634214006c025e0ffe6aab46`).set('Cookie', `${process.env.TOKEN}`);
-      const data = response.tojson();
-      expect(data.status).tobe(200);
+      const response = await request.delete(`${MOVIES_PATH}/63441473536ee678ae43eea8`).set('Cookie', `${process.env.TOKEN}`);
+      const data = response.toJSON();
+      expect(data.status).toBe(200);
     });
   });
 });

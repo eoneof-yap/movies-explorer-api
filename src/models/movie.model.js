@@ -1,7 +1,16 @@
 import mongoose from 'mongoose';
 import isURL from 'validator/lib/isURL.js';
+import BadRequestError from '../errors/BadRequestError.js';
+import ConflictError from '../errors/ConflictError.js';
+import { BAD_REQUEST_TXT, DB_DUPLICATE_KEY_CODE, MOVIE_EXIST_TXT } from '../utils/constants.js';
+import { validationErrorHandler } from '../utils/utils.js';
 
 const movieSchema = new mongoose.Schema({
+  movieId: {
+    required: true,
+    unique: true,
+    type: String,
+  },
   country: {
     required: true,
     type: String,
@@ -29,7 +38,7 @@ const movieSchema = new mongoose.Schema({
       validator: (image) => isURL(image),
     },
   },
-  trailerLink: {
+  trailer: {
     required: true,
     type: String,
     validate: {
@@ -48,11 +57,6 @@ const movieSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
   },
-  movieId: {
-    required: true,
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'movie',
-  },
   nameRU: {
     required: true,
     type: String,
@@ -62,5 +66,22 @@ const movieSchema = new mongoose.Schema({
     type: String,
   },
 });
+
+movieSchema.statics.createNew = async function createNew(movieProps) {
+  let movieEntry;
+  try {
+    movieEntry = await this.create(movieProps);
+    if (!movieEntry) throw new BadRequestError(BAD_REQUEST_TXT);
+
+    movieEntry = movieEntry.toObject();
+    delete movieEntry.__v;
+  } catch (err) {
+    validationErrorHandler(err);
+    if (err.code === DB_DUPLICATE_KEY_CODE) { // mongo err
+      throw new ConflictError(MOVIE_EXIST_TXT);
+    }
+  }
+  return movieEntry;
+};
 
 export default mongoose.model('movie', movieSchema);

@@ -11,8 +11,8 @@ const Movie = movieModel;
  * @returns { movieEntry } movie entry
  */
 export async function createMovie(req, res, next) {
-  const { movieProps } = req.body;
   try {
+    const { movieProps } = req.body;
     const movieEntry = await Movie.createNew(movieProps);
     return res.status(CREATED).send(movieEntry);
   } catch (err) {
@@ -37,8 +37,12 @@ export async function getMovies(req, res, next) {
 }
 
 export async function deleteMovieById(req, res, next) {
-  const { id } = req.params;
-  const movieEntry = await Movie.findById(id);
-  res.send(movieEntry);
-  return next();
+  try {
+    const { id } = req.params;
+    const movieEntry = await Movie.findById(id);
+    res.send(movieEntry);
+    return next();
+  } catch (err) {
+    return next(err);
+  }
 }

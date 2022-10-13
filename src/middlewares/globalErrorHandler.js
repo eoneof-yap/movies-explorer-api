@@ -15,5 +15,5 @@ export default function globalErrorHandler(err, req, res, next) {
     },
   );
 
-  next();
+  // next(err);
 }

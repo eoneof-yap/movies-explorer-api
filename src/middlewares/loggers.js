@@ -3,21 +3,45 @@
 import winston from 'winston';
 import expressWinston from 'express-winston';
 
-export const requestLogger = expressWinston.logger({
+export const logRequestsToFile = expressWinston.logger({
   transports: [
     new winston.transports.File({ filename: './logs/request.log' }),
   ],
-  format: winston.format.json(),
+  format: winston.format.combine(
+    winston.format.json(),
+    winston.format.timestamp(),
+  ),
 });
 
-export const errorLogger = expressWinston.errorLogger({
+export const logRequestsToConsole = expressWinston.logger({
+  transports: [
+    new winston.transports.Console(),
+  ],
+  format: winston.format.combine(
+    winston.format.simple(),
+    winston.format.timestamp(),
+  ),
+  msg: 'HTTP {{req.method}}\n      {{req.url}}',
+});
+
+export const logErrorsToFile = expressWinston.errorLogger({
   transports: [
     new winston.transports.File({ filename: './logs/error.log' }),
   ],
   format: winston.format.json(),
 });
 
-export const eventLogger = winston.createLogger({
+export const logErrosToConsole = expressWinston.errorLogger({
+  transports: [
+    new winston.transports.File({ filename: './logs/error.log' }),
+  ],
+  format: winston.format.combine(
+    winston.format.simple(),
+    winston.format.timestamp(),
+  ),
+});
+
+export const logEventsToFile = winston.createLogger({
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.json(),

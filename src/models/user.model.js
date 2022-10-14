@@ -7,13 +7,13 @@ import jwt from 'jsonwebtoken';
 import {
   USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT,
   PASSWORD_MIN_TXT, BAD_REQUEST_TXT, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE,
-  EMAIL_EXIST_TXT, JWT_EXPIRATION_TIMEOUT,
+  EMAIL_EXIST_TXT, JWT_EXPIRATION_TIMEOUT, BAD_ID_TXT,
+  VALIDATION_ERROR, CAST_ERROR,
 } from '../utils/constants.js';
 
 import ForbiddenError from '../errors/ForbiddenError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
-import { validationErrorHandler } from '../utils/utils.js';
 import NotFoundError from '../errors/NotFoundError.js';
 
 const JWT_SECRET = process.env.NODE_ENV === 'production'
@@ -45,41 +45,42 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.statics.createNew = async function createNew({ name, email, password }) {
-  let user;
+userSchema.statics.createNew = async function createNew(name, email, password) {
+  let userEntry;
   try {
     const hash = await bcrypt.hash(password, SALT_ROUNDS);
-    user = await this.create({ name, email, password: hash });
-    if (!user) throw new BadRequestError(BAD_REQUEST_TXT);
+    userEntry = await this.create({ name, email, password: hash });
+    if (!userEntry) throw new BadRequestError(BAD_REQUEST_TXT);
 
-    user = user.toObject();
-    delete user.password;
-    delete user.__v;
+    userEntry = userEntry.toObject();
+    delete userEntry.password;
+    delete userEntry.__v;
   } catch (err) {
-    validationErrorHandler(err);
-    if (err.code === DB_DUPLICATE_KEY_CODE) { // mongo err
-      throw new ConflictError(EMAIL_EXIST_TXT);
-    }
+    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(EMAIL_EXIST_TXT); // mongo err
+    if (err.kind === CAST_ERROR) throw new BadRequestError(BAD_ID_TXT);
+    throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
   }
-  return user;
+  return userEntry;
 };
 
 userSchema.statics.authorize = async function authorize(email, password) {
   let token;
   try {
-    const user = await this.findOne({ email }).select('+password');
-    if (!user) throw new NotFoundError(BAD_REQUEST_TXT);
+    const userEntry = await this.findOne({ email }).select('+password');
+    if (!userEntry) throw new NotFoundError(BAD_REQUEST_TXT);
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, userEntry.password);
     if (!match) throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
 
-    token = await jwt.sign({ _id: user._id }, JWT_SECRET, {
+    token = await jwt.sign({ _id: userEntry._id }, JWT_SECRET, {
       expiresIn: JWT_EXPIRATION_TIMEOUT,
     });
     if (!token) throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
     return token;
   } catch (err) {
-    validationErrorHandler(err);
+    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.kind === CAST_ERROR) { throw new BadRequestError(BAD_ID_TXT); }
     throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
   }
 };

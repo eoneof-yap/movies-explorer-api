@@ -1,13 +1,12 @@
-import userModel from '../models/userModel.js';
+import userModel from '../models/user.model.js';
 
 import NotFoundError from '../errors/NotFoundError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 
 import {
-  CREATED, USER_NOT_FOUND_TXT,
+  BAD_ID_TXT, CREATED, USER_NOT_FOUND_TXT,
+  VALIDATION_ERROR, CAST_ERROR, BAD_REQUEST_TXT,
 } from '../utils/constants.js';
-
-import { validationErrorHandler, objectIdErrorHanler } from '../utils/utils.js';
-import BadRequestError from '../errors/BadRequestError.js';
 
 const User = userModel;
 
@@ -16,10 +15,10 @@ const User = userModel;
  * @returns {{ user: { _id: string, name: string, email: string } }} user instance
  */
 export async function createUser(req, res, next) {
-  const { name, email, password } = req.body;
   try {
-    const user = await User.createNew({ name, email, password });
-    res.status(CREATED).send(user);
+    const { name, email, password } = req.body;
+    const userEntry = await User.createNew(name, email, password);
+    res.status(CREATED).send(userEntry);
   } catch (err) {
     next(err);
   }
@@ -31,15 +30,14 @@ export async function createUser(req, res, next) {
  * @returns {{ user: { _id: string, name: string, email: string } }} user instance
  */
 export async function getUser(req, res, next) {
-  const { id } = req.body;
   try {
+    const { id } = req.body;
     const user = await User.findById(id);
-    if (!user) return next(new BadRequestError(USER_NOT_FOUND_TXT));
-
+    if (!user) throw new BadRequestError(USER_NOT_FOUND_TXT);
     return res.send(user);
   } catch (err) {
-    validationErrorHandler(err, next);
-    objectIdErrorHanler(err, next);
+    if (err.name === VALIDATION_ERROR) { return next(new BadRequestError(BAD_REQUEST_TXT)); }
+    if (err.kind === CAST_ERROR) { return next(new BadRequestError(BAD_ID_TXT)); }
     next(err);
   }
   return next();
@@ -50,19 +48,18 @@ export async function getUser(req, res, next) {
  * @returns {{ user: { name: string, email: string } }} user instance
  */
 export async function updateUser(req, res, next) {
-  const { id, name, email } = req.body;
   try {
-    const user = await User.findByIdAndUpdate(
+    const { id, name, email } = req.body;
+    const userEntry = await User.findByIdAndUpdate(
       id,
       { name, email },
       { new: true, runValidators: true },
     );
-    if (!user) return next(new NotFoundError(USER_NOT_FOUND_TXT));
-
-    return res.send({ name: user.name, email: user.email });
+    if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
+    return res.send({ name: userEntry.name, email: userEntry.email });
   } catch (err) {
-    validationErrorHandler(err, next);
-    objectIdErrorHanler(err, next);
+    if (err.name === VALIDATION_ERROR) return next(new BadRequestError(BAD_REQUEST_TXT));
+    if (err.kind === CAST_ERROR) { return next(new BadRequestError(BAD_ID_TXT)); }
     next(err);
   }
   return next();

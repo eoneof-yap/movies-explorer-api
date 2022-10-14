@@ -24,28 +24,49 @@ dotenv.config();
 jest.setTimeout(30000);
 const request = supertest(app);
 
-const createLongUser = () => request.post(REGISTER_PATH).send(longUserPayload).set('Content-Type', 'application/json');
-const createInvalidUser = () => request.post(REGISTER_PATH).send(invalidUserPayload).set('Content-Type', 'application/json');
-const createEmptyUser = () => request.post(REGISTER_PATH).send({}).set('Content-Type', 'application/json');
+const headers = {
+  auth: 'Authorization',
+  type: 'Content-type',
+  value: 'application/json',
+};
+
+const createLongUser = () => request
+  .post(REGISTER_PATH).send(longUserPayload).set(headers.type, headers.value);
+
+const createInvalidUser = () => request
+  .post(REGISTER_PATH).send(invalidUserPayload).set(headers.type, headers.value);
+
+const createEmptyUser = () => request
+  .post(REGISTER_PATH).send({}).set(headers.type, headers.value);
+
 const createUser = async () => {
-  const response = await request.post(REGISTER_PATH).send(userPayload).set('Content-Type', 'application/json');
+  const response = await request
+    .post(REGISTER_PATH).send(userPayload).set(headers.type, headers.value);
   const data = response.toJSON();
   process.env.USER = data.text; // put returned value to the global scope
   return response;
 };
 
-const invalidlogin = () => request.post(LOGIN_PATH).send(invalidUserPayload).set('Content-Type', 'application/json');
-const wrongPasswordLogin = () => request.post(LOGIN_PATH).send(wrongPasswordPayload).set('Content-Type', 'application/json');
-const wrongEmailLogin = () => request.post(LOGIN_PATH).send(wrongEmailPayload).set('Content-Type', 'application/json');
+const invalidlogin = () => request
+  .post(LOGIN_PATH).send(invalidUserPayload).set(headers.type, headers.value);
+
+const wrongPasswordLogin = () => request
+  .post(LOGIN_PATH).send(wrongPasswordPayload).set(headers.type, headers.value);
+
+const wrongEmailLogin = () => request
+  .post(LOGIN_PATH).send(wrongEmailPayload).set(headers.type, headers.value);
+
 const login = async () => {
-  const response = await request.post(LOGIN_PATH).send(loginPayload).set('Content-Type', 'application/json');
+  const response = await request
+    .post(LOGIN_PATH).send(loginPayload).set(headers.type, headers.value);
   const data = response.toJSON();
   const { token } = JSON.parse(data.text);
   process.env.TOKEN = `Bearer ${token}`;
   return response;
 };
 
-const getUser = (user) => request.get(CURRENT_USER_PATH).send({ id: user._id }).set('Content-Type', 'application/json');
+const getUser = (user) => request
+  .get(CURRENT_USER_PATH).send({ id: user._id }).set(headers.type, headers.value);
 const patchUser = (user) => request.patch(CURRENT_USER_PATH).send({
   id: user._id,
   name: editedUserPayload.name,
@@ -79,18 +100,21 @@ describe('ОБЩЕЕ', () => {
   describe('/fake-path', () => {
     // FIXME: requires auth???
     test('[GET] Обращение по несуществующему пути без авторизации возвращает статус 401 ', async () => {
-      const response = await request.get('/fake-path');
+      const response = await request
+        .get('/fake-path');
       const data = response.toJSON();
       expect(data.status).toBe(401);
     });
 
     test('[GET] Обращение к роуту пользователя без авторизации возвращает статус 401 ', async () => {
-      const response = await request.get(CURRENT_USER_PATH);
+      const response = await request
+        .get(CURRENT_USER_PATH);
       const data = response.toJSON();
       expect(data.status).toBe(401);
     });
     test('[GET] Обращение к роуту фильмов без авторизации возвращает статус 401 ', async () => {
-      const response = await request.get(MOVIES_PATH);
+      const response = await request
+        .get(MOVIES_PATH);
       const data = response.toJSON();
       expect(data.status).toBe(401);
     });
@@ -171,7 +195,7 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       await createUser();
       await login();
       const user = JSON.parse(process.env.USER);
-      const response = await getUser(user).set('Authorization', `${process.env.TOKEN}`);
+      const response = await getUser(user).set(headers.auth, `${process.env.TOKEN}`);
       const data = response.toJSON();
       const { _id } = JSON.parse(data.text);
       expect(response.headers['content-type']).toMatch('application/json');
@@ -181,7 +205,7 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
 
     test('[PATCH] Обновляет имя и почту ', async () => {
       const user = JSON.parse(process.env.USER);
-      const response = await patchUser(user).set('Authorization', `${process.env.TOKEN}`);
+      const response = await patchUser(user).set(headers.auth, `${process.env.TOKEN}`);
       const data = response.toJSON();
       const instance = JSON.parse(data.text);
       expect(response.headers['content-type']).toMatch('application/json');
@@ -191,22 +215,23 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
     });
 
     test('[PATCH] Попытка передать невалидный id возвращает статус 400 ', async () => {
-      const response = await patchNonHexId().set('Authorization', `${process.env.TOKEN}`);
+      const response = await patchNonHexId().set(headers.auth, `${process.env.TOKEN}`);
       expect(response.status).toBe(400);
     });
 
     test('[PATCH] Попытка передать короткий id возвращает статус 400 ', async () => {
-      const response = await patchShortId().set('Authorization', `${process.env.TOKEN}`);
+      const response = await patchShortId().set(headers.auth, `${process.env.TOKEN}`);
       expect(response.status).toBe(400);
     });
 
     test('[PATCH] Попытка передать несуществующий id возвращает статус 404 ', async () => {
-      const response = await patchNonExistandId().set('Authorization', `${process.env.TOKEN}`);
+      const response = await patchNonExistandId().set(headers.auth, `${process.env.TOKEN}`);
       expect(response.status).toBe(404);
     });
 
     test('[GET] Попытка перейти по несуществующему защищенному пути возвращает 404', async () => {
-      const response = await request.get('/wrong-path').set('Authorization', `${process.env.TOKEN}`);
+      const response = await request
+        .get('/wrong-path').set(headers.auth, `${process.env.TOKEN}`);
       expect(response.status).toBe(404);
     });
   });
@@ -217,7 +242,8 @@ describe('ФИЛЬМЫ', () => {
     test('[POST] cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameRU, nameEN и thumbnail, movieid', async () => {
       await createUser();
       await login();
-      const response = await request.post(MOVIES_PATH).send(moviePayload).set('Authorization', `${process.env.TOKEN}`);
+      const response = await request
+        .post(MOVIES_PATH).send(moviePayload).set(headers.auth, `${process.env.TOKEN}`);
       const data = response.toJSON();
       const { _id } = JSON.parse(data.text);
       process.env.MOVIE_ID = _id;
@@ -226,7 +252,8 @@ describe('ФИЛЬМЫ', () => {
     });
 
     test('[GET] в ответе приходит массив ', async () => {
-      const response = await request.get(MOVIES_PATH).set('Authorization', `${process.env.TOKEN}`);
+      const response = await request
+        .get(MOVIES_PATH).set(headers.auth, `${process.env.TOKEN}`);
       const data = response.toJSON();
       expect(data.status).toBe(200);
       expect(JSON.parse(data.text)).toEqual(expect.arrayContaining([{ ...expectedMoviePayload }]));
@@ -235,7 +262,8 @@ describe('ФИЛЬМЫ', () => {
 
   describe('/movies/id', () => {
     test('[DELETE] Попытка удалить несуществующий фильм возвращает статус 404', async () => {
-      const response = await request.delete(`${MOVIES_PATH}/63441473536ee678ae43eea8`).set('Authorization', `${process.env.TOKEN}`);
+      const response = await request
+        .delete(`${MOVIES_PATH}/63441473536ee678ae43eea8`).set(headers.auth, `${process.env.TOKEN}`);
       const data = response.toJSON();
       expect(data.status).toBe(404);
     });
@@ -243,7 +271,8 @@ describe('ФИЛЬМЫ', () => {
 
   describe('/movies/id', () => {
     test('[DELETE] удаляет сохранённый фильм по id ', async () => {
-      const response = await request.delete(`${MOVIES_PATH}/${process.env.MOVIE_ID}`).set('Authorization', `${process.env.TOKEN}`);
+      const response = await request
+        .delete(`${MOVIES_PATH}/${process.env.MOVIE_ID}`).set(headers.auth, `${process.env.TOKEN}`);
       const data = response.toJSON();
       expect(data.status).toBe(200);
     });

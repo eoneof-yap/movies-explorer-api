@@ -43,17 +43,16 @@ export const validateUpdate = celebrate({
 export const validateMovieInfo = celebrate({
   body: Joi.object().keys({
     country: validRequiredString,
-    deirector: validRequiredString,
+    director: validRequiredString,
     duration: validnumber,
     year: validRequiredString,
     description: validRequiredString,
     image: validUrl,
-    trailerLink: validUrl,
+    trailer: validUrl,
     thumbnail: validUrl,
     owner: validId,
     movieId: validId,
     nameRU: validRequiredString,
-    nameEn: validRequiredString,
+    nameEN: validRequiredString,
   }),
-
 });

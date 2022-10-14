@@ -10,9 +10,11 @@ import {
   logRequestsToFile, logErrorsToFile, logRequestsToConsole, logErrosToConsole,
 } from './middlewares/loggers.js';
 
-import authRoute from './routes/authRoute.js';
-import userRoute from './routes/userRoute.js';
 import validateToken from './middlewares/validateToken.js';
+import publicRoutes from './routes/public.routes.js';
+import privateRoutes from './routes/private.routes.js';
+
+import notFound from './controllers/notFound.controller.js';
 
 dotenv.config();
 const app = express();
@@ -22,27 +24,21 @@ const { NODE_ENV = 'production' /* JWT_SECRET = '123-ABC-XYZ' */ } = process.env
 if (NODE_ENV === 'production') {
   app.use(logRequestsToFile);
 } else if (NODE_ENV === 'testing') {
-// connect to virtual DB while testing
+  // connect to virtual DB while testing
   getVirtualDbInstance();
 } else {
   app.use(logRequestsToConsole);
 }
 
-const app = express();
-
 app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(express.urlencoded({ extended: true }));
 
-app.use(requestLogger);
-
 // public routes
-app.use(authRoute);
-
-// app.use(routes); // main routes
+app.use(publicRoutes);
 
 // protected routes
 app.use(validateToken);
-app.use(userRoute);
+app.use(privateRoutes);
 
 // TODO: catch unauthorized 404s
 app.use(notFound); // 404

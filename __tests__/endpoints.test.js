@@ -196,7 +196,6 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       const user = JSON.parse(process.env.USER);
       const response = await getUser(user).set(headers.auth, process.env.TOKEN);
       const data = response.toJSON();
-      console.log(data);
       const { _id } = JSON.parse(data.text);
       expect(response.headers['content-type']).toMatch('application/json');
       expect(response.ok).toBeTruthy();

@@ -21,11 +21,11 @@ import app from '../src/app.js';
 
 dotenv.config();
 
-jest.setTimeout(30000);
+jest.setTimeout(15000);
 const request = supertest(app);
 
 const headers = {
-  auth: 'Authorization',
+  auth: 'Cookie',
   type: 'Content-type',
   value: 'application/json',
 };
@@ -47,6 +47,15 @@ const createUser = async () => {
   return response;
 };
 
+const login = async () => {
+  const response = await request
+    .post(LOGIN_PATH).send(loginPayload).set(headers.type, headers.value);
+  const data = response.toJSON();
+  const cookies = data.header['set-cookie'];
+  process.env.TOKEN = cookies;
+  return response;
+};
+
 const invalidlogin = () => request
   .post(LOGIN_PATH).send(invalidUserPayload).set(headers.type, headers.value);
 
@@ -55,15 +64,6 @@ const wrongPasswordLogin = () => request
 
 const wrongEmailLogin = () => request
   .post(LOGIN_PATH).send(wrongEmailPayload).set(headers.type, headers.value);
-
-const login = async () => {
-  const response = await request
-    .post(LOGIN_PATH).send(loginPayload).set(headers.type, headers.value);
-  const data = response.toJSON();
-  const { token } = JSON.parse(data.text);
-  process.env.TOKEN = `Bearer ${token}`;
-  return response;
-};
 
 const getUser = (user) => request
   .get(CURRENT_USER_PATH).send({ id: user._id }).set(headers.type, headers.value);
@@ -163,7 +163,7 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
   });
 
   describe('/signin', () => {
-    test('[POST] Успешный вход возвращает статус 200 и объект со строкой токена ', async () => {
+    test('[POST] Успешный вход возвращает статус 200 и куки ', async () => {
       await createUser();
       const response = await login();
       expect(response.headers['content-type']).toMatch('application/json');
@@ -194,8 +194,9 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
       await createUser();
       await login();
       const user = JSON.parse(process.env.USER);
-      const response = await getUser(user).set(headers.auth, `${process.env.TOKEN}`);
+      const response = await getUser(user).set(headers.auth, process.env.TOKEN);
       const data = response.toJSON();
+      console.log(data);
       const { _id } = JSON.parse(data.text);
       expect(response.headers['content-type']).toMatch('application/json');
       expect(response.ok).toBeTruthy();
@@ -204,7 +205,7 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
 
     test('[PATCH] Обновляет имя и почту ', async () => {
       const user = JSON.parse(process.env.USER);
-      const response = await patchUser(user).set(headers.auth, `${process.env.TOKEN}`);
+      const response = await patchUser(user).set(headers.auth, process.env.TOKEN);
       const data = response.toJSON();
       const instance = JSON.parse(data.text);
       expect(response.headers['content-type']).toMatch('application/json');
@@ -214,23 +215,23 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
     });
 
     test('[PATCH] Попытка передать невалидный id возвращает статус 400 ', async () => {
-      const response = await patchNonHexId().set(headers.auth, `${process.env.TOKEN}`);
+      const response = await patchNonHexId().set(headers.auth, process.env.TOKEN);
       expect(response.status).toBe(400);
     });
 
     test('[PATCH] Попытка передать короткий id возвращает статус 400 ', async () => {
-      const response = await patchShortId().set(headers.auth, `${process.env.TOKEN}`);
+      const response = await patchShortId().set(headers.auth, process.env.TOKEN);
       expect(response.status).toBe(400);
     });
 
     test('[PATCH] Попытка передать несуществующий id возвращает статус 404 ', async () => {
-      const response = await patchNonExistandId().set(headers.auth, `${process.env.TOKEN}`);
+      const response = await patchNonExistandId().set(headers.auth, process.env.TOKEN);
       expect(response.status).toBe(404);
     });
 
     test('[GET] Попытка перейти по несуществующему защищенному пути возвращает 404', async () => {
       const response = await request
-        .get('/wrong-path').set(headers.auth, `${process.env.TOKEN}`);
+        .get('/wrong-path').set(headers.auth, process.env.TOKEN);
       expect(response.status).toBe(404);
     });
   });
@@ -242,7 +243,7 @@ describe('ФИЛЬМЫ', () => {
       await createUser();
       await login();
       const response = await request
-        .post(MOVIES_PATH).send(moviePayload).set(headers.auth, `${process.env.TOKEN}`);
+        .post(MOVIES_PATH).send(moviePayload).set(headers.auth, process.env.TOKEN);
       const data = response.toJSON();
       const { _id } = JSON.parse(data.text);
       process.env.MOVIE_ID = _id;
@@ -252,7 +253,7 @@ describe('ФИЛЬМЫ', () => {
 
     test('[GET] в ответе приходит массив ', async () => {
       const response = await request
-        .get(MOVIES_PATH).set(headers.auth, `${process.env.TOKEN}`);
+        .get(MOVIES_PATH).set(headers.auth, process.env.TOKEN);
       const data = response.toJSON();
       expect(data.status).toBe(200);
       expect(JSON.parse(data.text)).toEqual(expect.arrayContaining([{ ...expectedMoviePayload }]));
@@ -262,7 +263,7 @@ describe('ФИЛЬМЫ', () => {
   describe('/movies/id', () => {
     test('[DELETE] Попытка удалить несуществующий фильм возвращает статус 404', async () => {
       const response = await request
-        .delete(`${MOVIES_PATH}/63441473536ee678ae43eea8`).set(headers.auth, `${process.env.TOKEN}`);
+        .delete(`${MOVIES_PATH}/63441473536ee678ae43eea8`).set(headers.auth, process.env.TOKEN);
       const data = response.toJSON();
       expect(data.status).toBe(404);
     });
@@ -271,7 +272,7 @@ describe('ФИЛЬМЫ', () => {
   describe('/movies/id', () => {
     test('[DELETE] удаляет сохранённый фильм по id ', async () => {
       const response = await request
-        .delete(`${MOVIES_PATH}/${process.env.MOVIE_ID}`).set(headers.auth, `${process.env.TOKEN}`);
+        .delete(`${MOVIES_PATH}/${process.env.MOVIE_ID}`).set(headers.auth, process.env.TOKEN);
       const data = response.toJSON();
       expect(data.status).toBe(200);
     });

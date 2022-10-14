@@ -1,7 +1,11 @@
 import NotFoundError from '../errors/NotFoundError.js';
 import movieModel from '../models/movie.model.js';
 
-import { CREATED, MOVIE_NOT_FOUND_TXT } from '../utils/constants.js';
+import {
+  CREATED, MOVIE_NOT_FOUND_TXT, VALIDATION_ERROR, CAST_ERROR, BAD_REQUEST_TXT, WRONG_ID_TXT,
+} from '../utils/constants.js';
+
+import BadRequestError from '../errors/BadRequestError.js';
 
 const Movie = movieModel;
 
@@ -16,6 +20,8 @@ export async function createMovie(req, res, next) {
     const movieEntry = await Movie.createNew({ ...movieProps });
     return res.status(CREATED).send(movieEntry);
   } catch (err) {
+    if (err.name === VALIDATION_ERROR) return next(new BadRequestError(BAD_REQUEST_TXT));
+    if (err.name === CAST_ERROR) return next(new BadRequestError(WRONG_ID_TXT));
     next(err);
   }
   return next();
@@ -56,6 +62,9 @@ export async function deleteMovieById(req, res, next) {
     res.send(movieEntry);
     return next();
   } catch (err) {
-    return next(err);
+    if (err.name === VALIDATION_ERROR) return next(new BadRequestError(BAD_REQUEST_TXT));
+    if (err.name === CAST_ERROR) return next(new BadRequestError(WRONG_ID_TXT));
+    next(err);
   }
+  return next();
 }

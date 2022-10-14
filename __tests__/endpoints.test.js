@@ -11,7 +11,8 @@ import * as db from './utils/virtualMongoServer.js';
 import {
   loginPayload, userPayload, invalidUserPayload,
   expectedUserPayload, editedUserPayload, longUserPayload,
-  shortIdPayload, nonHexIdPayload, nonExistantIdPayload, wrongPasswordPayload, wrongEmailPayload,
+  shortIdPayload, nonHexIdPayload, nonExistantIdPayload, wrongPasswordPayload,
+  wrongEmailPayload, moviePayload, expectedMoviePayload,
 } from './fixtures/mocks.js';
 import {
   CURRENT_USER_PATH, LOGIN_PATH, MOVIES_PATH, REGISTER_PATH,
@@ -83,12 +84,12 @@ describe('ОБЩЕЕ', () => {
       expect(data.status).toBe(401);
     });
 
-    test('[GET] Обращение к защищенному роуту без авторизации возвращает статус 401 ', async () => {
+    test('[GET] Обращение к роуту пользователя без авторизации возвращает статус 401 ', async () => {
       const response = await request.get(CURRENT_USER_PATH);
       const data = response.toJSON();
       expect(data.status).toBe(401);
     });
-    test('[GET] Обращение к защищенному роуту без авторизации возвращает статус 401 ', async () => {
+    test('[GET] Обращение к роуту фильмов без авторизации возвращает статус 401 ', async () => {
       const response = await request.get(MOVIES_PATH);
       const data = response.toJSON();
       expect(data.status).toBe(401);
@@ -213,20 +214,38 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
 
 describe('ФИЛЬМЫ', () => {
   describe('/movies', () => {
-    test.todo('[POST] Cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameRU, nameEN и thumbnail, movieId ');
-
-    test.skip('[GET] Получает список фильмов ', async () => {
-      const response = await request.get(MOVIES_PATH);
+    test('[POST] cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameRU, nameEN и thumbnail, movieid', async () => {
+      await createUser();
+      await login();
+      const response = await request.post(MOVIES_PATH).send(moviePayload).set('Authorization', `${process.env.TOKEN}`);
       const data = response.toJSON();
+      const { _id } = JSON.parse(data.text);
+      process.env.MOVIE_ID = _id;
+      expect(JSON.parse(data.text)).toEqual(expectedMoviePayload);
       expect(data.status).toBe(201);
     });
 
-    test.skip('[GET] В ответе приходит массив ', async () => {
-      expect(/* data */).toEqual(expect.arrayContaining([]));
+    test('[GET] в ответе приходит массив ', async () => {
+      const response = await request.get(MOVIES_PATH).set('Authorization', `${process.env.TOKEN}`);
+      const data = response.toJSON();
+      expect(data.status).toBe(200);
+      expect(JSON.parse(data.text)).toEqual(expect.arrayContaining([{ ...expectedMoviePayload }]));
     });
   });
 
   describe('/movies/id', () => {
-    test.todo('[DELETE] Удаляет сохранённый фильм по id ');
+    test('[DELETE] Попытка удалить несуществующий фильм взвращает статус 404', async () => {
+      const response = await request.delete(`${MOVIES_PATH}/63441473536ee678ae43eea8`).set('Authorization', `${process.env.TOKEN}`);
+      const data = response.toJSON();
+      expect(data.status).toBe(404);
+    });
+  });
+
+  describe('/movies/id', () => {
+    test('[DELETE] удаляет сохранённый фильм по id ', async () => {
+      const response = await request.delete(`${MOVIES_PATH}/${process.env.MOVIE_ID}`).set('Authorization', `${process.env.TOKEN}`);
+      const data = response.toJSON();
+      expect(data.status).toBe(200);
+    });
   });
 });

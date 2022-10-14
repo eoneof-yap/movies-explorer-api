@@ -23,7 +23,6 @@ export const MOVIE_ID_PATH = `${MOVIES_PATH}/:id`;
 
 // status messages
 export const BAD_REQUEST_TXT = 'Ошибка в запросе';
-export const BAD_ID_TXT = 'Неверный id';
 export const SERVER_ERROR_TXT = 'Сервер не смог обработать запрос';
 export const PATH_NOT_FOUND_TXT = 'Путь не найден';
 export const AUTH_REQUIRED_TXT = 'Необходима авторизация';
@@ -36,7 +35,7 @@ export const USER_NOT_FOUND_TXT = 'Пользователь не найден';
 export const MOVIE_DELETED_TXT = 'Фильм удален';
 export const MOVIE_NOT_FOUND_TXT = 'Фильм не найден';
 export const MOVIE_RESTRICTED_TXT = 'Нельзя удалять чужие фильмы';
-export const WRONG_ID_TXT = 'Неверный идентификатор';
+export const WRONG_ID_TXT = 'Неверный формат id';
 export const LOGIN_SUCCESFUL = 'Успешная авторизация';
 
 // error names

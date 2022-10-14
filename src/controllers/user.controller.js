@@ -4,7 +4,7 @@ import NotFoundError from '../errors/NotFoundError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 
 import {
-  BAD_ID_TXT, CREATED, USER_NOT_FOUND_TXT,
+  WRONG_ID_TXT, CREATED, USER_NOT_FOUND_TXT,
   VALIDATION_ERROR, CAST_ERROR, BAD_REQUEST_TXT,
 } from '../utils/constants.js';
 
@@ -37,7 +37,7 @@ export async function getUser(req, res, next) {
     return res.send(user);
   } catch (err) {
     if (err.name === VALIDATION_ERROR) return next(new BadRequestError(BAD_REQUEST_TXT));
-    if (err.name === CAST_ERROR) return next(new BadRequestError(BAD_ID_TXT));
+    if (err.name === CAST_ERROR) return next(new BadRequestError(WRONG_ID_TXT));
     next(err);
   }
   return next();
@@ -59,7 +59,7 @@ export async function updateUser(req, res, next) {
     return res.send({ name: userEntry.name, email: userEntry.email });
   } catch (err) {
     if (err.name === VALIDATION_ERROR) return next(new BadRequestError(BAD_REQUEST_TXT));
-    if (err.name === CAST_ERROR) { return next(new BadRequestError(BAD_ID_TXT)); }
+    if (err.name === CAST_ERROR) { return next(new BadRequestError(WRONG_ID_TXT)); }
     next(err);
   }
   return next();

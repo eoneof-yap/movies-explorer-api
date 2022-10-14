@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken';
 import {
   USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT,
   PASSWORD_MIN_TXT, BAD_REQUEST_TXT, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE,
-  EMAIL_EXIST_TXT, JWT_EXPIRATION_TIMEOUT, BAD_ID_TXT,
+  EMAIL_EXIST_TXT, JWT_EXPIRATION_TIMEOUT, WRONG_ID_TXT,
   VALIDATION_ERROR, CAST_ERROR,
 } from '../utils/constants.js';
 
@@ -58,7 +58,7 @@ userSchema.statics.createNew = async function createNew(name, email, password) {
   } catch (err) {
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(EMAIL_EXIST_TXT); // mongo err
-    if (err.name === CAST_ERROR) throw new BadRequestError(BAD_ID_TXT);
+    if (err.name === CAST_ERROR) throw new BadRequestError(WRONG_ID_TXT);
     throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
   }
   return userEntry;
@@ -80,7 +80,7 @@ userSchema.statics.authorize = async function authorize(email, password) {
     return token;
   } catch (err) {
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
-    if (err.name === CAST_ERROR) { throw new BadRequestError(BAD_ID_TXT); }
+    if (err.name === CAST_ERROR) { throw new BadRequestError(WRONG_ID_TXT); }
     throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
   }
 };

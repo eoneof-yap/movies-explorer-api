@@ -4,7 +4,7 @@ import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
 import {
   VALIDATION_ERROR, BAD_REQUEST_TXT, DB_DUPLICATE_KEY_CODE,
-  MOVIE_EXIST_TXT, BAD_ID_TXT, CAST_ERROR,
+  MOVIE_EXIST_TXT, WRONG_ID_TXT, CAST_ERROR,
 } from '../utils/constants.js';
 
 const movieSchema = new mongoose.Schema({
@@ -80,7 +80,7 @@ movieSchema.statics.createNew = async function createNew({ ...movie }) {
   } catch (err) {
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(MOVIE_EXIST_TXT); // mongo err
-    if (err.name === CAST_ERROR) throw new BadRequestError(BAD_ID_TXT);
+    if (err.name === CAST_ERROR) throw new BadRequestError(WRONG_ID_TXT);
   }
   return movieEntry;
 };

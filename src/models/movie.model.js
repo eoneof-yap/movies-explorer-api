@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import isURL from 'validator/lib/isURL.js';
 
 import {
-  DB_DUPLICATE_KEY_CODE, VALIDATION_ERROR_NAME, CAST_ERROR_NAME,
+  DB_DUPLICATE_KEY_CODE, VALIDATION_ERROR, CAST_ERROR_NAME,
   MOVIE_EXIST_TXT, WRONG_ID_TXT, BAD_REQUEST_TXT,
 
 } from '../utils/constants.js';
@@ -82,7 +82,7 @@ movieSchema.statics.createNew = async function createNew({ ...movie }) {
     movieEntry = movieEntry.toObject();
     delete movieEntry.__v;
   } catch (err) {
-    if (err.name === VALIDATION_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);
     if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(MOVIE_EXIST_TXT);
   }

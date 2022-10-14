@@ -10,8 +10,8 @@ import {
   logRequestsToFile, logErrorsToFile, logRequestsToConsole, logErrosToConsole,
 } from './middlewares/loggers.js';
 
-import validateToken from './middlewares/validateToken.js';
 import publicRoutes from './routes/public.routes.js';
+import checkAuth from './middlewares/checkAuth.js';
 import privateRoutes from './routes/private.routes.js';
 
 import notFound from './controllers/notFound.controller.js';
@@ -37,7 +37,7 @@ app.use(cookieParser(JWT_SECRET));
 app.use(publicRoutes);
 
 // protected routes
-app.use(validateToken);
+app.use(checkAuth);
 app.use(privateRoutes);
 
 app.use(errors()); // catch Joi validation errors

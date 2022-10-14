@@ -1,7 +1,7 @@
 import NotFoundError from '../errors/NotFoundError.js';
 import movieModel from '../models/movie.model.js';
 
-import { CREATED, MOVIE_NOT_FOUND_TXT } from '../utils/constants.js';
+import { CREATED, MOVIE_NOT_FOUND_TXT, MOVIE_DELETED_TXT } from '../utils/constants.js';
 
 const Movie = movieModel;
 
@@ -51,13 +51,13 @@ export async function getMovies(req, res, next) {
 export async function deleteMovieById(req, res, next) {
   try {
     const { id } = req.params;
-    let movieEntry = await Movie.findById(id);
+    let movieEntry = await Movie.findByIdAndDelete(id);
     if (!movieEntry) return next(new NotFoundError(MOVIE_NOT_FOUND_TXT));
 
     movieEntry = movieEntry.toObject();
     delete movieEntry.__v;
 
-    res.send(movieEntry);
+    res.send({ message: MOVIE_DELETED_TXT, movieEntry });
     return next();
   } catch (err) {
     next(err);

@@ -33,11 +33,11 @@ export async function getUser(req, res, next) {
   try {
     const { id } = req.body;
     const user = await User.findById(id);
-    if (!user) throw new BadRequestError(USER_NOT_FOUND_TXT);
+    if (!user) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(user);
   } catch (err) {
-    if (err.name === VALIDATION_ERROR) { return next(new BadRequestError(BAD_REQUEST_TXT)); }
-    if (err.kind === CAST_ERROR) { return next(new BadRequestError(BAD_ID_TXT)); }
+    if (err.name === VALIDATION_ERROR) return next(new BadRequestError(BAD_REQUEST_TXT));
+    if (err.name === CAST_ERROR) return next(new BadRequestError(BAD_ID_TXT));
     next(err);
   }
   return next();
@@ -59,7 +59,7 @@ export async function updateUser(req, res, next) {
     return res.send({ name: userEntry.name, email: userEntry.email });
   } catch (err) {
     if (err.name === VALIDATION_ERROR) return next(new BadRequestError(BAD_REQUEST_TXT));
-    if (err.kind === CAST_ERROR) { return next(new BadRequestError(BAD_ID_TXT)); }
+    if (err.name === CAST_ERROR) { return next(new BadRequestError(BAD_ID_TXT)); }
     next(err);
   }
   return next();

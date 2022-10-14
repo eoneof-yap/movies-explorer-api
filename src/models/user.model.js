@@ -58,7 +58,7 @@ userSchema.statics.createNew = async function createNew(name, email, password) {
   } catch (err) {
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(EMAIL_EXIST_TXT); // mongo err
-    if (err.kind === CAST_ERROR) throw new BadRequestError(BAD_ID_TXT);
+    if (err.name === CAST_ERROR) throw new BadRequestError(BAD_ID_TXT);
     throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
   }
   return userEntry;
@@ -80,7 +80,7 @@ userSchema.statics.authorize = async function authorize(email, password) {
     return token;
   } catch (err) {
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
-    if (err.kind === CAST_ERROR) { throw new BadRequestError(BAD_ID_TXT); }
+    if (err.name === CAST_ERROR) { throw new BadRequestError(BAD_ID_TXT); }
     throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
   }
 };

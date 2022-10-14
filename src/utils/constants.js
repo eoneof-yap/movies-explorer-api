@@ -43,7 +43,7 @@ export const WRONG_ID_TXT = 'Неверный формат id';
 export const CAST_ERROR_NAME = 'CastError';
 export const DB_DUPLICATE_KEY_CODE = 11000;
 export const TYPE_ERROR_NAME = 'TypeError';
-export const VALIDATION_ERROR_NAME = 'ValidationError';
+export const VALIDATION_ERROR = 'ValidationError';
 
 // misc
 export const JWT_EXPIRATION_TIMEOUT = 3600000 * 24 * 7; // 7 days

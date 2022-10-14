@@ -1,8 +1,11 @@
 import userModel from '../models/user.model.js';
-
-import { CREATED, USER_NOT_FOUND_TXT } from '../utils/constants.js';
+import {
+  CREATED, USER_NOT_FOUND_TXT, JWT_EXPIRATION_TIMEOUT, LOGIN_SUCCESFUL,
+  AUTH_REQUIRED_TXT,
+} from '../utils/constants.js';
 
 import NotFoundError from '../errors/NotFoundError.js';
+import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 const User = userModel;
 
@@ -58,14 +61,21 @@ export async function updateUser(req, res, next) {
 }
 
 /**
- * Login
- * @returns {{ token: string }} JWT token
+ * Verify pasword and set cookies response header
+ * @returns { { message: success string, res: { headers: {'set-cookies': string }} } signed cookie
  */
 export async function login(req, res, next) {
-  const { email, password } = req.body;
   try {
-    const token = await User.authorize(email, password); // TODO: save JWT to cookie
-    return res.send({ token });
+    const { email, password } = req.body;
+    const token = await User.authorize(email, password);
+    if (!token) return next(new UnauthorizedError(AUTH_REQUIRED_TXT));
+    return res.cookie('auth', token, {
+      maxAge: JWT_EXPIRATION_TIMEOUT,
+      httpOnly: true,
+      sameSite: true,
+      signed: true,
+    })
+      .send({ message: LOGIN_SUCCESFUL });
   } catch (err) {
     next(err);
   }

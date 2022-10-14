@@ -40,8 +40,6 @@ app.use(publicRoutes);
 app.use(validateToken);
 app.use(privateRoutes);
 
-// TODO: catch unauthorized 404s
-app.use(notFound); // 404
 app.use(errors()); // catch Joi validation errors
 
 if (NODE_ENV === 'production') {
@@ -49,6 +47,6 @@ if (NODE_ENV === 'production') {
 } else if (NODE_ENV === 'development') {
   app.use(logErrosToConsole);
 }
-// app.all('*', notFound); // TODO fix 404 error handling
+app.all('*', notFound); // TODO fix 404 error handling
 
 export default app; // to server.js

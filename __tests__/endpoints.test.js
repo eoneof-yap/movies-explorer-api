@@ -234,7 +234,7 @@ describe('ФИЛЬМЫ', () => {
   });
 
   describe('/movies/id', () => {
-    test('[DELETE] Попытка удалить несуществующий фильм взвращает статус 404', async () => {
+    test('[DELETE] Попытка удалить несуществующий фильм возвращает статус 404', async () => {
       const response = await request.delete(`${MOVIES_PATH}/63441473536ee678ae43eea8`).set('Authorization', `${process.env.TOKEN}`);
       const data = response.toJSON();
       expect(data.status).toBe(404);

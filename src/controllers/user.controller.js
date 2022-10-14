@@ -1,12 +1,8 @@
 import userModel from '../models/user.model.js';
 
-import NotFoundError from '../errors/NotFoundError.js';
-import BadRequestError from '../errors/BadRequestError.js';
+import { CREATED, USER_NOT_FOUND_TXT } from '../utils/constants.js';
 
-import {
-  WRONG_ID_TXT, CREATED, USER_NOT_FOUND_TXT,
-  VALIDATION_ERROR, CAST_ERROR, BAD_REQUEST_TXT,
-} from '../utils/constants.js';
+import NotFoundError from '../errors/NotFoundError.js';
 
 const User = userModel;
 
@@ -36,8 +32,6 @@ export async function getUser(req, res, next) {
     if (!user) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(user);
   } catch (err) {
-    if (err.name === VALIDATION_ERROR) return next(new BadRequestError(BAD_REQUEST_TXT));
-    if (err.name === CAST_ERROR) return next(new BadRequestError(WRONG_ID_TXT));
     next(err);
   }
   return next();
@@ -58,8 +52,6 @@ export async function updateUser(req, res, next) {
     if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
     return res.send({ name: userEntry.name, email: userEntry.email });
   } catch (err) {
-    if (err.name === VALIDATION_ERROR) return next(new BadRequestError(BAD_REQUEST_TXT));
-    if (err.name === CAST_ERROR) { return next(new BadRequestError(WRONG_ID_TXT)); }
     next(err);
   }
   return next();

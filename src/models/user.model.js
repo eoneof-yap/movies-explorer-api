@@ -8,7 +8,7 @@ import {
   USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT,
   PASSWORD_MIN_TXT, BAD_REQUEST_TXT, SALT_ROUNDS, DB_DUPLICATE_KEY_CODE,
   EMAIL_EXIST_TXT, JWT_EXPIRATION_TIMEOUT, WRONG_ID_TXT,
-  VALIDATION_ERROR, CAST_ERROR,
+  VALIDATION_ERROR_NAME, CAST_ERROR_NAME,
 } from '../utils/constants.js';
 
 import ForbiddenError from '../errors/ForbiddenError.js';
@@ -52,16 +52,19 @@ userSchema.statics.createNew = async function createNew(name, email, password) {
     userEntry = await this.create({ name, email, password: hash });
     if (!userEntry) throw new BadRequestError(BAD_REQUEST_TXT);
 
+    // cleanup returned
     userEntry = userEntry.toObject();
     delete userEntry.password;
     delete userEntry.__v;
+
+    return userEntry;
   } catch (err) {
-    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
-    if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(EMAIL_EXIST_TXT); // mongo err
-    if (err.name === CAST_ERROR) throw new BadRequestError(WRONG_ID_TXT);
+    if (err.name === VALIDATION_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);
+    if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(EMAIL_EXIST_TXT);
+
     throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
   }
-  return userEntry;
 };
 
 userSchema.statics.authorize = async function authorize(email, password) {
@@ -77,10 +80,12 @@ userSchema.statics.authorize = async function authorize(email, password) {
       expiresIn: JWT_EXPIRATION_TIMEOUT,
     });
     if (!token) throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
+
     return token;
   } catch (err) {
-    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
-    if (err.name === CAST_ERROR) { throw new BadRequestError(WRONG_ID_TXT); }
+    if (err.name === VALIDATION_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);
+
     throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
   }
 };

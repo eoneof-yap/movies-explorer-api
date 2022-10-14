@@ -1,9 +1,7 @@
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 
-import {
-  TOKEN_PREFIX, AUTH_REQUIRED_TXT,
-} from '../utils/constants.js';
+import { TOKEN_PREFIX, AUTH_REQUIRED_TXT } from '../utils/constants.js';
 
 import UnauthorizedError from '../errors/UnauthorizedError.js';
 
@@ -34,3 +32,32 @@ export default function validateToken(req, res, next) {
   }
   return next();
 }
+
+// const validateToken = (req, res, next) => {
+//   try {
+//     const { authorization } = req.headers;
+//     if (!authorization || !authorization.startsWith(TOKEN_PREFIX)) {
+//       next(new UnauthorizedError(AUTH_REQUIRED_TXT));
+//     }
+//     const token = authorization.replace(TOKEN_PREFIX, '');
+//     if (!token) next(new UnauthorizedError(AUTH_REQUIRED_TXT));
+
+//     const payload = jwt.verify(token, JWT_SECRET);
+//     if (!payload) next(new UnauthorizedError(TOKEN_INVALID_TXT));
+
+//     req.user = payload;
+//   } catch (err) {
+//     if (err.name === 'TokenExpiredError') next(new UnauthorizedError(TOKEN_EXPIRED_TXT));
+//     next(err);
+//   }
+// };
+
+// export default async function authorize(req, res, next) {
+//   try {
+//     const { auth } = req.signedCookies;
+//     if (!auth) next(new UnauthorizedError(AUTH_REQUIRED_TXT));
+//     await validateToken(req, res, next);
+//   } catch (err) {
+//     next(err);
+//   }
+// }

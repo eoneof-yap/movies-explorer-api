@@ -1,7 +1,10 @@
 import NotFoundError from '../errors/NotFoundError.js';
 import movieModel from '../models/movie.model.js';
 
-import { CREATED, MOVIE_NOT_FOUND_TXT, MOVIE_DELETED_TXT } from '../utils/constants.js';
+import {
+  CREATED, MOVIE_NOT_FOUND_TXT, MOVIE_DELETED_TXT, MOVIE_RESTRICTED_TXT,
+} from '../utils/constants.js';
+import ForbiddenError from '../errors/ForbiddenError.js';
 
 const Movie = movieModel;
 
@@ -52,8 +55,15 @@ export async function getMovies(req, res, next) {
 export async function deleteMovieById(req, res, next) {
   try {
     const { id } = req.params;
-    let movieEntry = await Movie.findByIdAndDelete(id);
+    const { user } = req.cookies;
+    let movieEntry = await Movie.findById(id);
     if (!movieEntry) return next(new NotFoundError(MOVIE_NOT_FOUND_TXT));
+
+    if (user._id !== movieEntry.owner.toString()) {
+      return next(new ForbiddenError(MOVIE_RESTRICTED_TXT));
+    }
+
+    movieEntry = await Movie.findByIdAndDelete(id);
 
     movieEntry = movieEntry.toObject();
     delete movieEntry.__v;

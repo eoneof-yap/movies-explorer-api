@@ -75,6 +75,12 @@ export async function login(req, res, next) {
       sameSite: true,
       signed: true,
     })
+      .cookie('user', userEntry, {
+        maxAge: JWT_EXPIRATION_TIMEOUT,
+        httpOnly: true,
+        sameSite: true,
+        signed: false,
+      })
       .send(userEntry);
   } catch (err) {
     next(err);
@@ -84,7 +90,7 @@ export async function login(req, res, next) {
 
 export async function logout(req, res, next) {
   try {
-    return res.clearCookie('auth')
+    return res.clearCookie('auth').clearCookie('user')
       .send({ message: LOGGED_OUT });
   } catch (err) {
     next(err);

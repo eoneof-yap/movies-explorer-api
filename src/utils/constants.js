@@ -32,6 +32,7 @@ export const LOGGED_OUT = 'Ключ авторизации удален';
 export const MOVIE_DELETED_TXT = 'Фильм удален из избранного';
 export const MOVIE_ADDED_TXT = 'Фильм добавлен в избранное';
 export const MOVIE_EXIST_TXT = 'Такой фильм уже есть в списке';
+export const MOVIES_LIST_EMPTY = 'Список избранного пуст';
 export const MOVIE_NOT_FOUND_TXT = 'Фильм не найден';
 export const MOVIE_RESTRICTED_TXT = 'Нельзя удалять чужие фильмы';
 export const PATH_NOT_FOUND_TXT = 'Путь не найден';

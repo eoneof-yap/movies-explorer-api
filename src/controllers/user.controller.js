@@ -38,7 +38,7 @@ export async function getUser(req, res, next) {
     const { user } = req.cookies;
     userEntry = await User.findById(user._id);
 
-    return res.send(userEntry.trim());
+    return res.send({ name: userEntry.name, email: userEntry.email });
   } catch (err) {
     if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
     if (err.name === CAST_ERROR_NAME) next(new NotFoundError(USER_NOT_FOUND_TXT));

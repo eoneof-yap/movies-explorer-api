@@ -43,7 +43,7 @@ export async function getMovies(req, res, next) {
   try {
     const { user } = req.cookies;
     const moviesList = await Movie.find({ owner: user._id });
-    if (moviesList.length === 0) res.send({ message: MOVIES_LIST_EMPTY });
+    if (moviesList.length === 0) return res.send({ message: MOVIES_LIST_EMPTY });
 
     return res.send(moviesList);
   } catch (err) {

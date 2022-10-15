@@ -13,7 +13,6 @@ const Movie = movieModel;
 
 /**
  * Add a movie to favorites list
- * @param { object } movieProps movie properties
  * @returns { movieEntry } movie entry
  */
 export async function createMovie(req, res, next) {
@@ -27,10 +26,6 @@ export async function createMovie(req, res, next) {
     if (exist.length > 0) return next(new ConflictError(MOVIE_EXIST_TXT));
 
     const movieEntry = await Movie.createEntry({ owner: user._id, ...movieProps });
-
-    // // cleanup returned
-    // movieEntry = movieEntry.toObject();
-    // delete movieEntry.__v;
 
     return res.status(CREATED).send({ message: MOVIE_ADDED_TXT, movieEntry });
   } catch (err) {
@@ -47,9 +42,7 @@ export async function getMovies(req, res, next) {
   try {
     const { user } = req.cookies;
     const moviesList = await Movie.find({ owner: user._id });
-    if (!moviesList) return next(new NotFoundError(MOVIE_NOT_FOUND_TXT));
     if (moviesList.length === 0) return next(new NotFoundError(MOVIES_LIST_EMPTY));
-    // const arr = [];
 
     return res.send(moviesList);
   } catch (err) {
@@ -69,6 +62,7 @@ export async function deleteMovieById(req, res, next) {
     let movieEntry = await Movie.findById(id);
     if (!movieEntry) return next(new NotFoundError(MOVIE_NOT_FOUND_TXT));
 
+    // check if the user is owner
     if (user._id !== movieEntry.owner.toString()) {
       return next(new ForbiddenError(MOVIE_RESTRICTED_TXT));
     }

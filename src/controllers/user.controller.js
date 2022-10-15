@@ -38,7 +38,7 @@ export async function getUser(req, res, next) {
     const { user } = req.cookies;
     userEntry = await User.findById(user._id);
 
-    return res.send({ name: userEntry.name, email: userEntry.email });
+    return res.send(userEntry.trim());
   } catch (err) {
     if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
     if (err.name === CAST_ERROR_NAME) next(new NotFoundError(USER_NOT_FOUND_TXT));
@@ -61,7 +61,7 @@ export async function updateUser(req, res, next) {
     );
     if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
 
-    return res.send({ name: userEntry.name, email: userEntry.email });
+    return res.send(userEntry.trim());
   } catch (err) {
     next(err);
   }

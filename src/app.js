@@ -13,21 +13,17 @@ import {
   logRequestsToFile, logErrorsToFile, logRequestsToConsole, logErrosToConsole,
 } from './middlewares/loggers.js';
 
-import publicRoutes from './routes/public.routes.js';
-import checkAuth from './middlewares/checkAuth.js';
-import privateRoutes from './routes/private.routes.js';
-
+import routes from './routes/index.js';
 import notFound from './controllers/notFound.controller.js';
 
 dotenv.config();
 const app = express();
-
-const limiter = rateLimit({
-  windowMs: 1000 * 60 * 15, // 15min
-  max: 100,
-});
-
 const { NODE_ENV = 'production', JWT_SECRET = '123-ABC-XYZ' } = process.env;
+
+const limiter = rateLimit({ windowMs: 1000 * 60 * 15, /* 15min */ max: 100 });
+app.use(helmet.hidePoweredBy());
+app.use(limiter);
+app.use(cors());
 
 if (NODE_ENV === 'production') {
   app.use(logRequestsToFile);
@@ -38,19 +34,10 @@ if (NODE_ENV === 'production') {
   app.use(logRequestsToConsole);
 }
 
-app.use(cors());
-app.use(limiter);
-app.use(helmet.hidePoweredBy());
-
 app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(cookieParser(JWT_SECRET));
 
-// public routes
-app.use(publicRoutes);
-
-// protected routes
-app.use(checkAuth);
-app.use(privateRoutes);
+app.use(routes);
 
 app.use(errors()); // catch Joi validation errors
 
@@ -60,6 +47,6 @@ if (NODE_ENV === 'production') {
   app.use(logErrosToConsole);
 }
 
-app.all('*', notFound);
+app.all('*', notFound); // handle global 404 error
 
 export default app; // to server.js

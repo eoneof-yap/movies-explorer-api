@@ -1,11 +1,12 @@
 import userModel from '../models/user.model.js';
 import {
-  CREATED, USER_NOT_FOUND_TXT, JWT_EXPIRATION_TIMEOUT,
-  AUTH_REQUIRED_TXT, LOGGED_OUT,
+  CREATED, USER_NOT_FOUND_TXT, JWT_EXPIRATION_TIMEOUT, LOGGED_OUT,
+  WRONG_CREDENTIALS_TXT, BAD_REQUEST_TXT,
 } from '../utils/constants.js';
 
 import NotFoundError from '../errors/NotFoundError.js';
 import UnauthorizedError from '../errors/UnauthorizedError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 
 const User = userModel;
 
@@ -16,8 +17,10 @@ const User = userModel;
 export async function createUser(req, res, next) {
   try {
     const { name, email, password } = req.body;
-    const userEntry = await User.createNew(name, email, password);
-    res.status(CREATED).send(userEntry);
+    const userEntry = await User.createEntry(name, email, password);
+    if (!userEntry) next(new BadRequestError(BAD_REQUEST_TXT));
+
+    return res.status(CREATED).send(userEntry);
   } catch (err) {
     next(err);
   }
@@ -31,9 +34,10 @@ export async function createUser(req, res, next) {
 export async function getUser(req, res, next) {
   try {
     const { id } = req.body;
-    const user = await User.findById(id);
-    if (!user) throw new NotFoundError(USER_NOT_FOUND_TXT);
-    return res.send(user);
+    const useEntry = await User.findById(id);
+    if (!useEntry) next(new NotFoundError(USER_NOT_FOUND_TXT));
+
+    return res.send(useEntry.trim());
   } catch (err) {
     next(err);
   }
@@ -53,7 +57,8 @@ export async function updateUser(req, res, next) {
       { new: true, runValidators: true },
     );
     if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
-    return res.send({ name: userEntry.name, email: userEntry.email });
+
+    return res.send(userEntry.trim());
   } catch (err) {
     next(err);
   }
@@ -70,7 +75,11 @@ export async function login(req, res, next) {
 
     // custom method
     const userEntry = await User.authorize(email, password);
-    if (!userEntry) return next(new UnauthorizedError(AUTH_REQUIRED_TXT));
+    if (!userEntry) {
+      // clear cookies if any
+      res.clearCookie('auth').clearCookie('user');
+      return next(new UnauthorizedError(WRONG_CREDENTIALS_TXT));
+    }
     return res.cookie('auth', userEntry._id, {
       maxAge: JWT_EXPIRATION_TIMEOUT,
       httpOnly: true,

@@ -61,7 +61,7 @@ export async function updateUser(req, res, next) {
     );
     if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
 
-    return res.send(userEntry.trim());
+    return res.send({ name: userEntry.name, email: userEntry.email });
   } catch (err) {
     next(err);
   }

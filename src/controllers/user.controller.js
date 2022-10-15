@@ -2,6 +2,7 @@ import userModel from '../models/user.model.js';
 import {
   CREATED, USER_NOT_FOUND_TXT, JWT_EXPIRATION_TIMEOUT, LOGGED_OUT,
   WRONG_CREDENTIALS_TXT, BAD_REQUEST_TXT,
+  CAST_ERROR_NAME,
 } from '../utils/constants.js';
 
 import NotFoundError from '../errors/NotFoundError.js';
@@ -32,13 +33,15 @@ export async function createUser(req, res, next) {
  * @returns {{ user: { _id: string, name: string, email: string } }} user instance
  */
 export async function getUser(req, res, next) {
+  let userEntry;
   try {
     const { id } = req.body;
-    const useEntry = await User.findById(id);
-    if (!useEntry) next(new NotFoundError(USER_NOT_FOUND_TXT));
+    userEntry = await User.findById(id);
 
-    return res.send(useEntry.trim());
+    return res.send(userEntry.trim());
   } catch (err) {
+    if (!userEntry) next(new NotFoundError(USER_NOT_FOUND_TXT));
+    if (err.name === CAST_ERROR_NAME) next(new NotFoundError(USER_NOT_FOUND_TXT));
     next(err);
   }
   return next();

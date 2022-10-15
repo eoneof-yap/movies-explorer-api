@@ -3,11 +3,12 @@ import movieModel from '../models/movie.model.js';
 
 import {
   CREATED, MOVIE_NOT_FOUND_TXT, MOVIE_DELETED_TXT, MOVIE_RESTRICTED_TXT,
-  MOVIE_ADDED_TXT, MOVIES_LIST_EMPTY, MOVIE_EXIST_TXT,
+  MOVIE_ADDED_TXT, MOVIES_LIST_EMPTY, MOVIE_EXIST_TXT, CAST_ERROR_NAME, WRONG_ID_TXT,
 } from '../utils/constants.js';
 
 import ForbiddenError from '../errors/ForbiddenError.js';
 import ConflictError from '../errors/ConflictError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 
 const Movie = movieModel;
 
@@ -70,6 +71,7 @@ export async function deleteMovieById(req, res, next) {
     res.send({ message: MOVIE_DELETED_TXT, movieEntry });
     return next();
   } catch (err) {
+    if (err.name === CAST_ERROR_NAME) next(new BadRequestError(WRONG_ID_TXT));
     next(err);
   }
   return next();

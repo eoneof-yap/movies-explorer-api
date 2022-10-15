@@ -47,6 +47,7 @@ if (NODE_ENV === 'production') {
 } else if (NODE_ENV === 'development') {
   app.use(logErrosToConsole);
 }
+
 app.all('*', notFound);
 
 export default app; // to server.js

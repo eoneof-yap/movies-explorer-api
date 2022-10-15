@@ -1,6 +1,6 @@
 import userModel from '../models/user.model.js';
 import {
-  CREATED, USER_NOT_FOUND_TXT, JWT_EXPIRATION_TIMEOUT, LOGIN_SUCCESFUL,
+  CREATED, USER_NOT_FOUND_TXT, JWT_EXPIRATION_TIMEOUT,
   AUTH_REQUIRED_TXT, LOGGED_OUT,
 } from '../utils/constants.js';
 

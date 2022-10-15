@@ -2,7 +2,10 @@ import dotenv from 'dotenv';
 import express from 'express';
 import process from 'process';
 import { errors } from 'celebrate';
+import rateLimit from 'express-rate-limit';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import helmet from 'helmet';
 
 import getVirtualDbInstance from '../__tests__/utils/testHelpers.js';
 
@@ -19,6 +22,11 @@ import notFound from './controllers/notFound.controller.js';
 dotenv.config();
 const app = express();
 
+const limiter = rateLimit({
+  windowMs: 1000 * 60 * 15, // 15min
+  max: 100,
+});
+
 const { NODE_ENV = 'production', JWT_SECRET = '123-ABC-XYZ' } = process.env;
 
 if (NODE_ENV === 'production') {
@@ -29,6 +37,10 @@ if (NODE_ENV === 'production') {
 } else {
   app.use(logRequestsToConsole);
 }
+
+app.use(cors());
+app.use(limiter);
+app.use(helmet.hidePoweredBy());
 
 app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(cookieParser(JWT_SECRET));

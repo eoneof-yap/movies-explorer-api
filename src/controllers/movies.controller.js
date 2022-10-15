@@ -70,7 +70,7 @@ export async function deleteMovieById(req, res, next) {
     movieEntry = await Movie.deleteEntry(id);
     return res.send({ message: MOVIE_DELETED_TXT, movieEntry });
   } catch (err) {
-    if (err.name === CAST_ERROR_NAME) next(new BadRequestError(WRONG_ID_TXT));
+    if (err.name === CAST_ERROR_NAME) return next(new BadRequestError(WRONG_ID_TXT));
     next(err);
   }
   return next();

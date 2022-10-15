@@ -65,16 +65,13 @@ userSchema.statics.authorize = async function authorize(email, password) {
   let userEntry;
   try {
     userEntry = await this.findOne({ email }).select('+password');
-    if (!userEntry) throw new NotFoundError(BAD_REQUEST_TXT);
+    if (!userEntry) throw new NotFoundError('sdkfjhsdf');
 
     const match = await bcrypt.compare(password, userEntry.password);
     if (!match) throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
 
     return userEntry.trim();
   } catch (err) {
-    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
-    if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);
-
     throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
   }
 };

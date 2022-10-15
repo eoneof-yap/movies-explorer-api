@@ -67,6 +67,8 @@ export async function updateUser(req, res, next) {
 export async function login(req, res, next) {
   try {
     const { email, password } = req.body;
+
+    // custom method
     const userEntry = await User.authorize(email, password);
     if (!userEntry) return next(new UnauthorizedError(AUTH_REQUIRED_TXT));
     return res.cookie('auth', userEntry._id, {

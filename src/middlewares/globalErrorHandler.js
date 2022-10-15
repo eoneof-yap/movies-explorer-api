@@ -5,14 +5,19 @@ import {
 
 export default function globalErrorHandler(err, req, res, next) {
   // incoming errors
-  if (err.name === TYPE_ERROR_NAME) res.status(BAD_REQUEST).send({ error: BAD_REQUEST_TXT });
-  if (err.name === VALIDATION_ERROR) res.status(BAD_REQUEST).send({ error: BAD_REQUEST_TXT });
-  if (err.name === CAST_ERROR_NAME) res.status(BAD_REQUEST).send({ error: WRONG_ID_TXT });
+  if (err.name === TYPE_ERROR_NAME) {
+    return res.status(BAD_REQUEST).send({ error: BAD_REQUEST_TXT });
+  }
+  if (err.name === VALIDATION_ERROR) {
+    return res.status(BAD_REQUEST).send({ error: BAD_REQUEST_TXT });
+  }
+  if (err.name === CAST_ERROR_NAME) {
+    return res.status(BAD_REQUEST).send({ error: WRONG_ID_TXT });
+  }
 
   const { statusCode = SERVER_ERROR, message } = err;
   res.status(statusCode).json({
     error: statusCode === SERVER_ERROR ? SERVER_ERROR_TXT : message,
   });
-
-  next();
+  return next();
 }

@@ -31,8 +31,10 @@ export async function createMovie(req, res, next) {
  */
 export async function getMovies(req, res, next) {
   try {
-    const moviesList = await Movie.find({});
+    const { user } = req.cookies;
+    const moviesList = await Movie.find({ owner: user._id });
     if (!moviesList) return next(new NotFoundError(MOVIE_NOT_FOUND_TXT));
+    if (moviesList.length === 0) return next(new NotFoundError(MOVIE_NOT_FOUND_TXT));
     const arr = [];
 
     moviesList.forEach((item) => {

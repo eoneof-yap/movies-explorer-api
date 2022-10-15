@@ -45,7 +45,13 @@ export async function getMovies(req, res, next) {
     const moviesList = await Movie.find({ owner: user._id });
     if (moviesList.length === 0) return res.send({ message: MOVIES_LIST_EMPTY });
 
-    return res.send(moviesList);
+    const arr = [];
+    moviesList.forEach((item) => {
+      const movie = item.toObject();
+      delete movie.__v;
+      arr.push(movie);
+    });
+    return res.send(arr);
   } catch (err) {
     next(err);
   }

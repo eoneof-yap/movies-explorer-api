@@ -60,14 +60,20 @@ userSchema.statics.createNew = async function createNew(name, email, password) {
 };
 
 userSchema.statics.authorize = async function authorize(email, password) {
+  let userEntry;
   try {
-    const userEntry = await this.findOne({ email }).select('+password');
+    userEntry = await this.findOne({ email }).select('+password');
     if (!userEntry) throw new NotFoundError(BAD_REQUEST_TXT);
 
     const match = await bcrypt.compare(password, userEntry.password);
     if (!match) throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
 
-    return userEntry._id;
+    // cleanup returned
+    userEntry = userEntry.toObject();
+    delete userEntry.password;
+    delete userEntry.__v;
+
+    return userEntry;
   } catch (err) {
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);

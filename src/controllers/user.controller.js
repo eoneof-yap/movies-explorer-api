@@ -67,15 +67,15 @@ export async function updateUser(req, res, next) {
 export async function login(req, res, next) {
   try {
     const { email, password } = req.body;
-    const token = await User.authorize(email, password);
-    if (!token) return next(new UnauthorizedError(AUTH_REQUIRED_TXT));
-    return res.cookie('auth', token, {
+    const userEntry = await User.authorize(email, password);
+    if (!userEntry) return next(new UnauthorizedError(AUTH_REQUIRED_TXT));
+    return res.cookie('auth', userEntry._id, {
       maxAge: JWT_EXPIRATION_TIMEOUT,
       httpOnly: true,
       sameSite: true,
       signed: true,
     })
-      .send({ message: LOGIN_SUCCESFUL });
+      .send(userEntry);
   } catch (err) {
     next(err);
   }

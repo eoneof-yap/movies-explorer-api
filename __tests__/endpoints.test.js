@@ -238,7 +238,7 @@ describe('ПОЛЬЗОВАТЕЛЬ', () => {
 
 describe('ФИЛЬМЫ', () => {
   describe('/movies', () => {
-    test('[POST] cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailer, nameRU, nameEN и thumbnail, movieid', async () => {
+    test('[POST] cоздаёт фильм с переданными в теле country, director, duration, year, description, image, trailerLink, nameRU, nameEN и thumbnail, movieid', async () => {
       await createUser();
       await login();
       const response = await request

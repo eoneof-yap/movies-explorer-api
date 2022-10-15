@@ -48,7 +48,7 @@ export const validateMovieInfo = celebrate({
     year: validRequiredString,
     description: validRequiredString,
     image: validUrl,
-    trailer: validUrl,
+    trailerLink: validUrl,
     thumbnail: validUrl,
     owner: validId,
     movieId: validId,

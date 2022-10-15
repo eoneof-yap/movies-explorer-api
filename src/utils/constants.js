@@ -15,6 +15,7 @@ export const USER_NAME_MIN_TXT = 'имя должно быть длиной не
 // endpoints
 export const LOGIN_PATH = '/signin';
 export const REGISTER_PATH = '/signup';
+export const LOGOUT_PATH = '/signout';
 
 export const USERS_PATH = '/users';
 export const CURRENT_USER_PATH = `${USERS_PATH}/me`;
@@ -27,6 +28,7 @@ export const AUTH_REQUIRED_TXT = 'Необходима авторизация';
 export const BAD_REQUEST_TXT = 'Ошибка в запросе';
 export const EMAIL_EXIST_TXT = 'Пользователь с такой почтой уже существует';
 export const LOGIN_SUCCESFUL = 'Успешная авторизация';
+export const LOGGED_OUT = 'Ключ авторизации удален';
 export const MOVIE_DELETED_TXT = 'Фильм удален';
 export const MOVIE_EXIST_TXT = 'Такой фильм уже есть в списке';
 export const MOVIE_NOT_FOUND_TXT = 'Фильм не найден';

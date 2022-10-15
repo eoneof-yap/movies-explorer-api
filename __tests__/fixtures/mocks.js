@@ -54,7 +54,7 @@ export const moviePayload = {
   duration: 0,
   description: 'faker fakes fakin fakes faking fakes',
   image: 'https://website.com/fake-image.jpg',
-  trailer: 'https://website.com/fake-trailer.mp4',
+  trailerLink: 'https://website.com/fake-trailerLink.mp4',
   thumbnail: 'https://website.com/fake-thumb.jpg',
   owner: '634214006c025e0ffe6aab46',
 };
@@ -70,7 +70,7 @@ export const expectedMoviePayload = {
   duration: expect.any(Number),
   description: 'faker fakes fakin fakes faking fakes',
   image: 'https://website.com/fake-image.jpg',
-  trailer: 'https://website.com/fake-trailer.mp4',
+  trailerLink: 'https://website.com/fake-trailerLink.mp4',
   thumbnail: 'https://website.com/fake-thumb.jpg',
   owner: expect.any(String),
 };

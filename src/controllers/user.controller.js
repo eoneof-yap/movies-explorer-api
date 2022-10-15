@@ -1,7 +1,7 @@
 import userModel from '../models/user.model.js';
 import {
   CREATED, USER_NOT_FOUND_TXT, JWT_EXPIRATION_TIMEOUT, LOGIN_SUCCESFUL,
-  AUTH_REQUIRED_TXT,
+  AUTH_REQUIRED_TXT, LOGGED_OUT,
 } from '../utils/constants.js';
 
 import NotFoundError from '../errors/NotFoundError.js';
@@ -76,6 +76,16 @@ export async function login(req, res, next) {
       signed: true,
     })
       .send({ message: LOGIN_SUCCESFUL });
+  } catch (err) {
+    next(err);
+  }
+  return next();
+}
+
+export async function logout(req, res, next) {
+  try {
+    return res.clearCookie('auth')
+      .send({ message: LOGGED_OUT });
   } catch (err) {
     next(err);
   }

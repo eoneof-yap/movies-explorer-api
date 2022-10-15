@@ -19,7 +19,7 @@ export async function createUser(req, res, next) {
   try {
     const { name, email, password } = req.body;
     const userEntry = await User.createEntry(name, email, password);
-    if (!userEntry) next(new BadRequestError(BAD_REQUEST_TXT));
+    if (!userEntry) return next(new BadRequestError(BAD_REQUEST_TXT));
 
     return res.status(CREATED).send(userEntry);
   } catch (err) {
@@ -40,7 +40,7 @@ export async function getUser(req, res, next) {
 
     return res.send(userEntry.trim());
   } catch (err) {
-    if (!userEntry) next(new NotFoundError(USER_NOT_FOUND_TXT));
+    if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
     if (err.name === CAST_ERROR_NAME) next(new NotFoundError(USER_NOT_FOUND_TXT));
     next(err);
   }

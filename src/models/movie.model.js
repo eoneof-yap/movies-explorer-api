@@ -2,18 +2,19 @@ import mongoose from 'mongoose';
 import isURL from 'validator/lib/isURL.js';
 
 import {
-  DB_DUPLICATE_KEY_CODE, VALIDATION_ERROR, CAST_ERROR_NAME,
-  MOVIE_EXIST_TXT, WRONG_ID_TXT, BAD_REQUEST_TXT,
-
+  VALIDATION_ERROR, CAST_ERROR_NAME, MOVIE_EXIST_TXT,
+  WRONG_ID_TXT, BAD_REQUEST_TXT, MOVIE_NOT_FOUND_TXT,
+  MOVIE_RESTRICTED_TXT,
 } from '../utils/constants.js';
 
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
+import NotFoundError from '../errors/NotFoundError.js';
+import ForbiddenError from '../errors/ForbiddenError.js';
 
 const movieSchema = new mongoose.Schema({
   movieId: {
     required: true,
-    unique: true,
     type: String,
   },
   country: {
@@ -57,11 +58,14 @@ const movieSchema = new mongoose.Schema({
       validator: (image) => isURL(image),
     },
   },
-  owner: {
-    required: true,
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'user',
-  },
+  owner: [
+    {
+      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'user',
+      default: [],
+    },
+  ],
   nameRU: {
     required: true,
     type: String,
@@ -72,11 +76,25 @@ const movieSchema = new mongoose.Schema({
   },
 });
 
-movieSchema.statics.createNew = async function createNew({ owner, ...movie }) {
+movieSchema.statics.createEntry = async function createEntry(userId, { owner, ...movie }, next) {
   let movieEntry;
+  const { movieId } = movie;
   try {
-    movieEntry = await this.create({ owner, ...movie });
-    if (!movieEntry) throw new BadRequestError(BAD_REQUEST_TXT);
+    // check if movie is in the list
+    movieEntry = await this.findOne({ movieId });
+    if (!movieEntry) {
+      movieEntry = await this.create({ owner, ...movie }); // if not add one
+      if (!movieEntry) return next(new BadRequestError(BAD_REQUEST_TXT));
+    } else if (movieEntry.owner.includes(userId)) {
+      return next(new ConflictError(MOVIE_EXIST_TXT));
+    }
+
+    // if exist add owners
+    movieEntry = await this.findByIdAndUpdate(
+      movieEntry._id,
+      { $addToSet: { owner: userId } },
+      { new: true },
+    );
 
     // cleanup returned
     movieEntry = movieEntry.toObject();
@@ -84,7 +102,35 @@ movieSchema.statics.createNew = async function createNew({ owner, ...movie }) {
   } catch (err) {
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);
-    if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(MOVIE_EXIST_TXT);
+    next(err);
+  }
+  return movieEntry;
+};
+
+movieSchema.statics.deleteEntry = async function deleteEntry(movieId, userId, next) {
+  let movieEntry;
+  try {
+    movieEntry = await this.findById(movieId);
+
+    if (!movieEntry) return next(new NotFoundError(MOVIE_NOT_FOUND_TXT));
+
+    // restrict deletion if the user is not in the owners array
+    if (!movieEntry.owner.some((owner) => owner === userId)) {
+      return next(new ForbiddenError(MOVIE_RESTRICTED_TXT));
+    }
+
+    // remove the user from movie's owners
+    movieEntry = await this.findByIdAndUpdate(movieId, { $pull: { owner: userId } }, { new: true });
+
+    // delete the entry if there's no owners
+    if (movieEntry.owner.lenght === 0) movieEntry = await this.findByIdAndDelete(movieId);
+
+    movieEntry = movieEntry.toObject();
+    delete movieEntry.__v;
+  } catch (err) {
+    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);
+    next(err);
   }
   return movieEntry;
 };

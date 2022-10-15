@@ -3,6 +3,14 @@
 import winston from 'winston';
 import expressWinston from 'express-winston';
 
+const cookieFilter = (req, propName) => {
+  if (propName !== 'headers') return req[propName];
+
+  const { cookie, ...rest } = req.headers;
+
+  return rest;
+};
+
 export const logRequestsToFile = expressWinston.logger({
   transports: [
     new winston.transports.File({ filename: './logs/request.log' }),
@@ -11,6 +19,7 @@ export const logRequestsToFile = expressWinston.logger({
     winston.format.json(),
     winston.format.timestamp(),
   ),
+  requestFilter: cookieFilter,
 });
 
 export const logRequestsToConsole = expressWinston.logger({

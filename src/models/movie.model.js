@@ -13,7 +13,6 @@ import ConflictError from '../errors/ConflictError.js';
 const movieSchema = new mongoose.Schema({
   movieId: {
     required: true,
-    unique: true,
     type: String,
   },
   country: {

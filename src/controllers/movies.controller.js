@@ -43,7 +43,7 @@ export async function getMovies(req, res, next) {
   try {
     const { user } = req.cookies;
     const moviesList = await Movie.find({ owner: user._id });
-    if (moviesList.length === 0) return res.send({ message: MOVIES_LIST_EMPTY });
+    if (moviesList.length === 0) res.send({ message: MOVIES_LIST_EMPTY });
 
     return res.send(moviesList);
   } catch (err) {
@@ -68,8 +68,7 @@ export async function deleteMovieById(req, res, next) {
       return next(new ForbiddenError(MOVIE_RESTRICTED_TXT));
     }
     movieEntry = await Movie.deleteEntry(id);
-    res.send({ message: MOVIE_DELETED_TXT, movieEntry });
-    return next();
+    return res.send({ message: MOVIE_DELETED_TXT, movieEntry });
   } catch (err) {
     if (err.name === CAST_ERROR_NAME) next(new BadRequestError(WRONG_ID_TXT));
     next(err);

@@ -72,10 +72,10 @@ const movieSchema = new mongoose.Schema({
   },
 });
 
-movieSchema.statics.createNew = async function createNew({ ...movie }) {
+movieSchema.statics.createNew = async function createNew({ owner, ...movie }) {
   let movieEntry;
   try {
-    movieEntry = await this.create({ ...movie });
+    movieEntry = await this.create({ owner, ...movie });
     if (!movieEntry) throw new BadRequestError(BAD_REQUEST_TXT);
 
     // cleanup returned

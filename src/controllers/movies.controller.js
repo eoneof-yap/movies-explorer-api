@@ -12,8 +12,9 @@ const Movie = movieModel;
  */
 export async function createMovie(req, res, next) {
   try {
+    const { user } = req.cookies;
     const { ...movieProps } = req.body;
-    const movieEntry = await Movie.createNew({ ...movieProps });
+    const movieEntry = await Movie.createNew({ owner: user._id, ...movieProps });
     return res.status(CREATED).send(movieEntry);
   } catch (err) {
     next(err);

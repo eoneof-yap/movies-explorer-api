@@ -50,6 +50,12 @@ export const TYPE_ERROR_NAME = 'TypeError';
 export const VALIDATION_ERROR = 'ValidationError';
 
 // misc
-export const JWT_EXPIRATION_TIMEOUT = 3600000 * 24 * 7; // 7 days
+export const KEY_EXPIRATION_TIMEOUT = 3600000 * 24 * 7; // 7 days
 export const SALT_ROUNDS = 10;
 export const TOKEN_PREFIX = 'Bearer ';
+
+// dev
+export const DB = 'mongodb://127.0.0.1:27017/moviesdb';
+export const ENV_PORT = 3000;
+export const ENV = 'production';
+export const KEY = '123-AbC-xYz';

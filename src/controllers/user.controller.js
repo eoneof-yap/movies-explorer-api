@@ -1,6 +1,6 @@
 import userModel from '../models/user.model.js';
 import {
-  CREATED, USER_NOT_FOUND_TXT, JWT_EXPIRATION_TIMEOUT, LOGGED_OUT,
+  CREATED, USER_NOT_FOUND_TXT, KEY_EXPIRATION_TIMEOUT, LOGGED_OUT,
   WRONG_CREDENTIALS_TXT, BAD_REQUEST_TXT,
   CAST_ERROR_NAME,
 } from '../utils/constants.js';
@@ -84,13 +84,13 @@ export async function login(req, res, next) {
       return next(new UnauthorizedError(WRONG_CREDENTIALS_TXT));
     }
     return res.cookie('auth', userEntry._id, {
-      maxAge: JWT_EXPIRATION_TIMEOUT,
+      maxAge: KEY_EXPIRATION_TIMEOUT,
       httpOnly: true,
       sameSite: true,
       signed: true,
     })
       .cookie('user', userEntry, {
-        maxAge: JWT_EXPIRATION_TIMEOUT,
+        maxAge: KEY_EXPIRATION_TIMEOUT,
         httpOnly: true,
         sameSite: true,
         signed: false,

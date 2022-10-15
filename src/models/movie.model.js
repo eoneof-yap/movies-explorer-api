@@ -69,6 +69,12 @@ const movieSchema = new mongoose.Schema({
   },
 });
 
+movieSchema.methods.trim = function trim() {
+  const movie = this.toObject();
+  delete movie.__v;
+  return movie;
+};
+
 movieSchema.statics.createEntry = async function createEntry({ owner, ...movieProps }) {
   let movieEntry;
   try {
@@ -78,7 +84,19 @@ movieSchema.statics.createEntry = async function createEntry({ owner, ...moviePr
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);
   }
-  return movieEntry;
+  return movieEntry.trim();
+};
+
+movieSchema.statics.deleteEntry = async function deleteEntry(id) {
+  let movieEntry;
+  try {
+    movieEntry = await this.findByIdAndDelete(id);
+    if (!movieEntry) throw new BadRequestError(BAD_REQUEST_TXT);
+  } catch (err) {
+    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);
+  }
+  return movieEntry.trim();
 };
 
 export default mongoose.model('movie', movieSchema);

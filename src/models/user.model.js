@@ -37,6 +37,13 @@ const userSchema = new mongoose.Schema({
   },
 });
 
+userSchema.methods.trim = function trim() {
+  const user = this.toObject();
+  delete user.password;
+  delete user.__v;
+  return user;
+};
+
 userSchema.statics.createNew = async function createNew(name, email, password) {
   let userEntry;
   try {
@@ -44,12 +51,7 @@ userSchema.statics.createNew = async function createNew(name, email, password) {
     userEntry = await this.create({ name, email, password: hash });
     if (!userEntry) throw new BadRequestError(BAD_REQUEST_TXT);
 
-    // cleanup returned
-    userEntry = userEntry.toObject();
-    delete userEntry.password;
-    delete userEntry.__v;
-
-    return userEntry;
+    return userEntry.trim();
   } catch (err) {
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);
@@ -68,12 +70,7 @@ userSchema.statics.authorize = async function authorize(email, password) {
     const match = await bcrypt.compare(password, userEntry.password);
     if (!match) throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
 
-    // cleanup returned
-    userEntry = userEntry.toObject();
-    delete userEntry.password;
-    delete userEntry.__v;
-
-    return userEntry;
+    return userEntry.trim();
   } catch (err) {
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(WRONG_ID_TXT);

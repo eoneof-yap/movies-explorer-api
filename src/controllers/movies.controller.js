@@ -2,7 +2,7 @@ import NotFoundError from '../errors/NotFoundError.js';
 import movieModel from '../models/movie.model.js';
 
 import {
-  CREATED, MOVIE_NOT_FOUND_TXT, MOVIE_DELETED_TXT, MOVIE_RESTRICTED_TXT,
+  CREATED, MOVIE_NOT_FOUND_TXT, MOVIE_DELETED_TXT, MOVIE_RESTRICTED_TXT, MOVIE_ADDED_TXT,
 } from '../utils/constants.js';
 import ForbiddenError from '../errors/ForbiddenError.js';
 
@@ -18,7 +18,7 @@ export async function createMovie(req, res, next) {
     const { user } = req.cookies;
     const { ...movieProps } = req.body;
     const movieEntry = await Movie.createNew({ owner: user._id, ...movieProps });
-    return res.status(CREATED).send(movieEntry);
+    return res.status(CREATED).send({ message: MOVIE_ADDED_TXT, movieEntry });
   } catch (err) {
     next(err);
   }

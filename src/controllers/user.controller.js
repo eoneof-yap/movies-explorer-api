@@ -35,8 +35,8 @@ export async function createUser(req, res, next) {
 export async function getUser(req, res, next) {
   let userEntry;
   try {
-    const { id } = req.body;
-    userEntry = await User.findById(id);
+    const { user } = req.cookies;
+    userEntry = await User.findById(user._id);
 
     return res.send(userEntry.trim());
   } catch (err) {

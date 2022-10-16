@@ -8,7 +8,9 @@ import helmet from 'helmet';
 
 import getVirtualDbInstance from '../__tests__/utils/testHelpers.js';
 
-import { KEY, ENV } from './utils/constants.js';
+import {
+  runtimeKey, runtimeMode, prodMode, devMode, testMode,
+} from './utils/constants.js';
 
 import {
   logRequestsToFile, logErrorsToFile, logRequestsToConsole, logErrosToConsole,
@@ -20,17 +22,16 @@ import notFound from './controllers/notFound.controller.js';
 
 dotenv.config();
 const app = express();
-const { NODE_ENV = ENV, SECRET_KEY = KEY } = process.env;
+const { NODE_ENV = runtimeMode, SECRET_KEY = runtimeKey } = process.env;
 
 app.use(helmet.hidePoweredBy());
 app.use(limiter);
 app.use(cors());
 
-if (NODE_ENV === 'production') {
+if (NODE_ENV === prodMode) {
   app.use(logRequestsToFile);
-} else if (NODE_ENV === 'testing') {
-  // connect to virtual DB while testing
-  getVirtualDbInstance();
+} else if (NODE_ENV === testMode) {
+  getVirtualDbInstance(); // connect to virtual DB while testing
 } else {
   app.use(logRequestsToConsole);
 }
@@ -38,13 +39,13 @@ if (NODE_ENV === 'production') {
 app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(cookieParser(SECRET_KEY));
 
-app.use(routes);
+app.use(routes); // main routes
 
 app.use(errors()); // catch Joi validation errors
 
-if (NODE_ENV === 'production') {
+if (NODE_ENV === prodMode) {
   app.use(logErrorsToFile);
-} else if (NODE_ENV === 'development') {
+} else if (NODE_ENV === devMode) {
   app.use(logErrosToConsole);
 }
 

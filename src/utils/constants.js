@@ -48,14 +48,23 @@ export const CAST_ERROR_NAME = 'CastError';
 export const DB_DUPLICATE_KEY_CODE = 11000;
 export const TYPE_ERROR_NAME = 'TypeError';
 export const VALIDATION_ERROR = 'ValidationError';
+export const UNCAUGHT_EXCEPTION = 'uncaughtException';
+export const UNHANDLED_ERROR_NAME = 'Необработанная ошибка:';
 
 // misc
 export const KEY_EXPIRATION_TIMEOUT = 3600000 * 24 * 7; // 7 days
 export const SALT_ROUNDS = 10;
-export const TOKEN_PREFIX = 'Bearer ';
 
 // dev
-export const DB = 'mongodb://127.0.0.1:27017/moviesdb';
-export const ENV_PORT = 3000;
-export const ENV = 'production';
-export const KEY = '123-AbC-xYz';
+export const runtimeDb = 'mongodb://127.0.0.1:27017/moviesdb';
+export const runtimePort = 3000;
+export const runtimeMode = 'production';
+export const runtimeKey = '123-AbC-xYz';
+
+export const prodMode = 'production';
+export const devMode = 'development';
+export const testMode = 'testing';
+
+export const ERRORS_LOG = './logs/errors.log';
+export const REQUESTS_LOG = './logs/requests.log';
+export const EVENTS_LOG = './logs/events.log';

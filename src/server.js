@@ -5,7 +5,8 @@ import mongoose from 'mongoose';
 import app from './app.js';
 
 import {
-  SERVER_ERROR, SERVER_ERROR_TXT, DB, ENV_PORT, ENV,
+  SERVER_ERROR, SERVER_ERROR_TXT, runtimeDb, runtimePort, runtimeMode, devMode, prodMode,
+  UNCAUGHT_EXCEPTION, UNHANDLED_ERROR_NAME,
 } from './utils/constants.js';
 
 import globalErrorHandler from './middlewares/globalErrorHandler.js';
@@ -13,22 +14,22 @@ import { logEventsToFile, logEventsToConsole } from './middlewares/loggers.js';
 
 dotenv.config();
 
-const { NODE_ENV = ENV, PORT = ENV_PORT, DB_PATH = DB } = process.env;
+const { NODE_ENV = runtimeMode, PORT = runtimePort, DB_PATH = runtimeDb } = process.env;
 
 (async () => {
   try {
     await mongoose.connect(DB_PATH);
     await app.listen(PORT, () => {
-      if (NODE_ENV === 'production') {
+      if (NODE_ENV === prodMode) {
         logEventsToFile.info(`Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"`);
-      } else if (NODE_ENV === 'development') {
+      } else if (NODE_ENV === devMode) {
         logEventsToConsole(`Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"`);
       }
     });
   } catch (err) {
-    if (NODE_ENV === 'production') {
+    if (NODE_ENV === prodMode) {
       logEventsToFile.info(`Сервер не запустился ${err}`);
-    } else if (NODE_ENV === 'development') {
+    } else if (NODE_ENV === devMode) {
       logEventsToConsole(`Сервер не запустился ${err}`);
     }
   }
@@ -36,8 +37,8 @@ const { NODE_ENV = ENV, PORT = ENV_PORT, DB_PATH = DB } = process.env;
 
 app.use(globalErrorHandler);
 
-process.on('uncaughtException', (err, origin) => {
-  logEventsToConsole(`Необработанная ошибка: "${origin}" "${err.name}" "${err.message}" "${err.stack}`);
+process.on(UNCAUGHT_EXCEPTION, (err, origin) => {
+  logEventsToConsole(`${UNHANDLED_ERROR_NAME} ${origin}" "${err.name}" "${err.message}" "${err.stack}`);
   app.use((res) => {
     res.status(SERVER_ERROR).send(SERVER_ERROR_TXT);
   });

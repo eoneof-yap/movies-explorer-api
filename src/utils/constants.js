@@ -56,9 +56,9 @@ export const KEY_EXPIRATION_TIMEOUT = 3600000 * 24 * 7; // 7 days
 export const SALT_ROUNDS = 10;
 
 // dev
-export const runtimeDb = 'mongodb://127.0.0.1:27017/moviesdb';
-export const runtimePort = 3000;
-export const runtimeMode = 'production';
+export const runtimeDb = 'mongodb://127.0.0.1:27017/moviesdb-dev';
+export const runtimePort = 3001;
+export const runtimeMode = 'development';
 export const runtimeKey = '123-AbC-xYz';
 
 export const prodMode = 'production';

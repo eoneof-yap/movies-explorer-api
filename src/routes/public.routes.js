@@ -2,8 +2,9 @@ import express from 'express';
 import { errors } from 'celebrate';
 
 import { REGISTER_PATH, LOGIN_PATH } from '../utils/constants.js';
-import { createUser, login } from '../controllers/user.controller.js';
+
 import { validateRegister, validateLogin } from '../middlewares/validators.js';
+import { createUser, login } from '../controllers/user.controller.js';
 
 const publicRouter = express.Router();
 

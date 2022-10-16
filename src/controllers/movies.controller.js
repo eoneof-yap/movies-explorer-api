@@ -27,7 +27,6 @@ export async function createMovie(req, res, next) {
     if (exist.length > 0) return next(new ConflictError(MOVIE_EXIST_TXT));
 
     const movieEntry = await Movie.createEntry({ owner: user._id, ...movieProps });
-
     return res.status(CREATED).send({ message: MOVIE_ADDED_TXT, movieEntry });
   } catch (err) {
     next(err);

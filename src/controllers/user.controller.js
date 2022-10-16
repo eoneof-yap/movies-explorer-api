@@ -53,9 +53,10 @@ export async function getUser(req, res, next) {
  */
 export async function updateUser(req, res, next) {
   try {
-    const { id, name, email } = req.body;
+    const { user } = req.cookies;
+    const { name, email } = req.body;
     const userEntry = await User.findByIdAndUpdate(
-      id,
+      user._id,
       { name, email },
       { new: true, runValidators: true },
     );

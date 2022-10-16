@@ -21,7 +21,7 @@
 
 ## API
 
-Само API покоится на домене [api.eoneof-diploma.nomoredomains.icu](api.eoneof-diploma.nomoredomains.icu). В нем реализовано восемь роутов:  
+Само API покоится на домене [api.eoneof-diploma.nomoredomains.icu](http://api.eoneof-diploma.nomoredomains.icu). В нем реализовано восемь роутов:  
 
 **Публичные**
 

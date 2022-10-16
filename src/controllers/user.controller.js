@@ -1,7 +1,7 @@
 import userModel from '../models/user.model.js';
 import {
   CREATED, USER_NOT_FOUND_TXT, KEY_EXPIRATION_TIMEOUT, LOGGED_OUT,
-  WRONG_CREDENTIALS_TXT, BAD_REQUEST_TXT,
+  WRONG_CREDENTIALS_TXT, BAD_REQUEST_TXT, SIGNUP_SUCCESSFUL,
   CAST_ERROR_NAME,
 } from '../utils/constants.js';
 
@@ -20,7 +20,7 @@ export async function createUser(req, res, next) {
     const { name, email, password } = req.body;
     const userEntry = await User.createEntry(name, email, password);
     if (!userEntry) return next(new BadRequestError(BAD_REQUEST_TXT));
-    return res.status(CREATED).send(userEntry);
+    return res.status(CREATED).send({ message: SIGNUP_SUCCESSFUL });
   } catch (err) {
     next(err);
   }

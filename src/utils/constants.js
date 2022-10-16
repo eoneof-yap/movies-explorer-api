@@ -27,6 +27,7 @@ export const MOVIE_ID_PATH = `${MOVIES_PATH}/:id`;
 export const AUTH_REQUIRED_TXT = 'Необходима авторизация';
 export const BAD_REQUEST_TXT = 'Ошибка в запросе';
 export const EMAIL_EXIST_TXT = 'Пользователь с такой почтой уже существует';
+export const SIGNUP_SUCCESSFUL = 'Успешная регистрация';
 export const LOGIN_SUCCESFUL = 'Успешная авторизация';
 export const LOGGED_OUT = 'Ключ авторизации удален';
 export const MOVIE_DELETED_TXT = 'Фильм удален из избранного';

@@ -19,7 +19,7 @@ export async function createUser(req, res, next) {
   try {
     const { name, email, password } = req.body;
     const userEntry = await User.createEntry(name, email, password);
-    if (!userEntry) return next(new BadRequestError(BAD_REQUEST_TXT));
+    if (!userEntry) throw new BadRequestError(BAD_REQUEST_TXT);
     return res.status(CREATED).send({ message: SIGNUP_SUCCESSFUL });
   } catch (err) {
     next(err);
@@ -38,7 +38,7 @@ export async function getUser(req, res, next) {
     userEntry = await User.findById(user._id);
     return res.send(userEntry.trim());
   } catch (err) {
-    if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
+    if (!userEntry) next(new NotFoundError(USER_NOT_FOUND_TXT));
     if (err.name === CAST_ERROR_NAME) next(new NotFoundError(USER_NOT_FOUND_TXT));
     next(err);
   }
@@ -58,7 +58,7 @@ export async function updateUser(req, res, next) {
       { name, email },
       { new: true, runValidators: true },
     );
-    if (!userEntry) return next(new NotFoundError(USER_NOT_FOUND_TXT));
+    if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(userEntry.trim());
   } catch (err) {
     next(err);
@@ -78,7 +78,7 @@ export async function login(req, res, next) {
     const userEntry = await User.authorize(email, password);
     if (!userEntry) {
       res.clearCookie('auth').clearCookie('user'); // clear cookies if any
-      return next(new UnauthorizedError(WRONG_CREDENTIALS_TXT));
+      throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
     }
     return res.cookie('auth', userEntry._id, {
       maxAge: KEY_EXPIRATION_TIMEOUT,

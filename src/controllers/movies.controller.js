@@ -24,7 +24,7 @@ export async function createMovie(req, res, next) {
 
     // check if movie is in the list
     const exist = await Movie.find({ $and: [{ movieId }, { owner: user._id }] });
-    if (exist.length > 0) return next(new ConflictError(MOVIE_EXIST_TXT));
+    if (exist.length > 0) throw new ConflictError(MOVIE_EXIST_TXT);
 
     const movieEntry = await Movie.createEntry({ owner: user._id, ...movieProps });
     return res.status(CREATED).send({ message: MOVIE_ADDED_TXT, movieEntry });
@@ -66,16 +66,16 @@ export async function deleteMovieById(req, res, next) {
     const { id } = req.params;
     const { user } = req.cookies;
     let movieEntry = await Movie.findById(id);
-    if (!movieEntry) return next(new NotFoundError(MOVIE_NOT_FOUND_TXT));
+    if (!movieEntry) throw new NotFoundError(MOVIE_NOT_FOUND_TXT);
 
     // check if the user is owner
     if (user._id !== movieEntry.owner.toString()) {
-      return next(new ForbiddenError(MOVIE_RESTRICTED_TXT));
+      throw new ForbiddenError(MOVIE_RESTRICTED_TXT);
     }
     movieEntry = await Movie.deleteEntry(id);
     return res.send({ message: MOVIE_DELETED_TXT, movieEntry });
   } catch (err) {
-    if (err.name === CAST_ERROR_NAME) return next(new BadRequestError(WRONG_ID_TXT));
+    if (err.name === CAST_ERROR_NAME) next(new BadRequestError(WRONG_ID_TXT));
     next(err);
   }
   return next();

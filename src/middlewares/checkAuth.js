@@ -8,7 +8,7 @@ import UnauthorizedError from '../errors/UnauthorizedError.js';
 export default async function checkAuth(req, res, next) {
   try {
     const { auth } = req.signedCookies;
-    if (!auth) return next(new UnauthorizedError(AUTH_REQUIRED_TXT));
+    if (!auth) throw new UnauthorizedError(AUTH_REQUIRED_TXT);
     return next();
   } catch (err) {
     next(err);

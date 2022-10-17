@@ -3,8 +3,6 @@ import { celebrate, Joi } from 'celebrate';
 // common config
 const validUrl = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/i;
 const validRequiredString = Joi.string().required();
-const validUserId = Joi.string().hex().length(24).alphanum()
-  .required();
 const validMovieId = Joi.number().required();
 const validRequiredNumber = Joi.number().required();
 
@@ -30,7 +28,6 @@ export const validateLogin = celebrate({
 
 export const validateUpdate = celebrate({
   body: Joi.object().keys({
-    id: validUserId,
     name: validUserName,
     email: validEmail,
   }),

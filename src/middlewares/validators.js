@@ -6,7 +6,7 @@ const validRequiredString = Joi.string().required();
 const validUserId = Joi.string().hex().length(24).alphanum()
   .required();
 const validMovieId = Joi.number().required();
-const validnumber = Joi.number();
+const validRequiredNumber = Joi.number().required();
 
 // user data config
 const validUserName = Joi.string().required().min(2).max(30);
@@ -50,13 +50,10 @@ export const validateMovieInfo = celebrate({
     director: validRequiredString,
     country: validRequiredString,
     year: validRequiredString,
-    duration: validnumber,
+    duration: validRequiredNumber,
     description: validRequiredString,
     trailerLink: validUrl,
     image: validUrl,
     thumbnail: validUrl,
-    // get owner from cookies after authorization,
-    // validate in movieSchema only
-    owner: Joi.forbidden(),
   }),
 });

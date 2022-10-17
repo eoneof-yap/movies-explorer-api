@@ -55,14 +55,15 @@ export async function updateUser(req, res, next) {
     const { name, email } = req.body;
 
     userEntry = await User.findOne({ email });
+    if (!userEntry) {
+      userEntry = await User.findByIdAndUpdate(
+        user._id,
+        { name, email },
+        { new: true, runValidators: true },
+      );
+      if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
+    }
     if (userEntry.id !== user._id) throw new ConflictError(EMAIL_EXIST_TXT);
-
-    userEntry = await User.findByIdAndUpdate(
-      user._id,
-      { name, email },
-      { new: true, runValidators: true },
-    );
-    if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(userEntry.trim());
   } catch (err) {
     return next(err);

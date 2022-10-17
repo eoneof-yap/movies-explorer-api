@@ -38,7 +38,7 @@
 | **PATCH /users/me**    | `{name, email}`                                                                                        | `{id, name, email}`            | обновляет информацию о пользователе                                           |
 | **POST /signout**      | —                                                                                                      | `{message}`                    | удаляет куки пользователя                                                     |
 | **GET /movies**        | —                                                                                                      | `[{movieEntry}]`               | возвращает все сохранённые текущим  пользователем фильмы                      |
-| **POST /movies**       | `{country, director, duration, year, description, image, trailer, nameRU, nameEN, thumbnail, movieId}` | `{message, movieEntry: {...}`  | создает запись фильма из полученных данных                                    |
+| **POST /movies**       | `{country, director, duration, year, description, image, trailer, nameRU, nameEN, thumbnail, movieId}` | `{message, movieEntry: {...}`  | создает запись фильма из полученных данных, поле `owner` берется из куков     |
 | **DELETE /movies/_id** | —                                                                                                      | `{message, movieEntry: {...}}` | удаляет запись фильма по id                                                   |
 
 Сервер стартует с файла `/src/server.js`. Разделение на `app.js` и `server.js` было сделано в угоду тестрования.

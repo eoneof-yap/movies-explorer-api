@@ -18,6 +18,6 @@ privateRouter.get(CURRENT_USER_PATH, validateId, getUser)
 // movies
 privateRouter.get(MOVIES_PATH, getMovies)
   .post(MOVIES_PATH, validateMovieInfo, createMovie)
-  .delete(MOVIE_ID_PATH, validateId, deleteMovieById);
+  .delete(MOVIE_ID_PATH, deleteMovieById);
 
 export default privateRouter;

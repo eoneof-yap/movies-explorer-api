@@ -8,9 +8,7 @@ import helmet from 'helmet';
 
 import getVirtualDbInstance from '../__tests__/utils/testHelpers.js';
 
-import {
-  runtimeKey, runtimeMode, prodMode, devMode, testMode,
-} from './utils/constants.js';
+import { runtimeKey, runtimeMode } from './utils/constants.js';
 
 import {
   logRequestsToFile, logErrorsToFile, logRequestsToConsole, logErrosToConsole,
@@ -18,15 +16,14 @@ import {
 
 import limiter from './utils/rateLimit.js';
 import routes from './routes/index.js';
-import notFoundRoute from './routes/notFound.route.js';
 
 dotenv.config();
 const app = express();
 const { NODE_ENV = runtimeMode, SECRET_KEY = runtimeKey } = process.env;
 
-if (NODE_ENV === prodMode) {
+if (NODE_ENV === 'production') {
   app.use(logRequestsToFile);
-} else if (NODE_ENV === testMode) {
+} else if (NODE_ENV === 'testing') {
   getVirtualDbInstance(); // connect to virtual DB while testing
 } else {
   app.use(logRequestsToConsole);
@@ -43,11 +40,9 @@ app.use(routes); // main routes
 
 app.use(errors()); // catch Joi validation errors
 
-routes.use(notFoundRoute);
-
-if (NODE_ENV === prodMode) {
+if (NODE_ENV === 'production') {
   app.use(logErrorsToFile);
-} else if (NODE_ENV === devMode) {
+} else if (NODE_ENV === 'development') {
   app.use(logErrosToConsole);
 }
 

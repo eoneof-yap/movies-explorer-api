@@ -61,10 +61,6 @@ export const runtimePort = 3001;
 export const runtimeMode = 'development';
 export const runtimeKey = '123-AbC-xYz';
 
-export const prodMode = 'production';
-export const devMode = 'development';
-export const testMode = 'testing';
-
 export const ERRORS_LOG = './logs/errors.log';
 export const REQUESTS_LOG = './logs/requests.log';
 export const EVENTS_LOG = './logs/events.log';

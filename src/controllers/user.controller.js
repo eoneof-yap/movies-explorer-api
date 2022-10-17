@@ -23,9 +23,8 @@ export async function createUser(req, res, next) {
     if (!userEntry) throw new BadRequestError(BAD_REQUEST_TXT);
     return res.status(CREATED).send({ message: SIGNUP_SUCCESSFUL });
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }
 
 /**
@@ -40,10 +39,9 @@ export async function getUser(req, res, next) {
     if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(userEntry.trim());
   } catch (err) {
-    if (err.name === CAST_ERROR_NAME) next(new BadRequestError(BAD_REQUEST_TXT));
-    next(err);
+    if (err.name === CAST_ERROR_NAME) return next(new BadRequestError(BAD_REQUEST_TXT));
+    return next(err);
   }
-  return next();
 }
 
 /**
@@ -67,9 +65,8 @@ export async function updateUser(req, res, next) {
     if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(userEntry.trim());
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }
 
 /**
@@ -100,9 +97,8 @@ export async function login(req, res, next) {
       })
       .send(userEntry);
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }
 
 export async function logout(req, res, next) {
@@ -110,7 +106,6 @@ export async function logout(req, res, next) {
     return res.clearCookie('auth').clearCookie('user')
       .send({ message: LOGGED_OUT });
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }

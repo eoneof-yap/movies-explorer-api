@@ -2,12 +2,13 @@ import userModel from '../models/user.model.js';
 import {
   CREATED, USER_NOT_FOUND_TXT, KEY_EXPIRATION_TIMEOUT, LOGGED_OUT,
   WRONG_CREDENTIALS_TXT, BAD_REQUEST_TXT, SIGNUP_SUCCESSFUL,
-  CAST_ERROR_NAME,
+  CAST_ERROR_NAME, EMAIL_EXIST_TXT,
 } from '../utils/constants.js';
 
 import NotFoundError from '../errors/NotFoundError.js';
 import UnauthorizedError from '../errors/UnauthorizedError.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import ConflictError from '../errors/ConflictError.js';
 
 const User = userModel;
 
@@ -22,9 +23,8 @@ export async function createUser(req, res, next) {
     if (!userEntry) throw new BadRequestError(BAD_REQUEST_TXT);
     return res.status(CREATED).send({ message: SIGNUP_SUCCESSFUL });
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }
 
 /**
@@ -36,13 +36,12 @@ export async function getUser(req, res, next) {
   try {
     const { user } = req.cookies;
     userEntry = await User.findById(user._id);
+    if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(userEntry.trim());
   } catch (err) {
-    if (!userEntry) next(new NotFoundError(USER_NOT_FOUND_TXT));
-    if (err.name === CAST_ERROR_NAME) next(new NotFoundError(USER_NOT_FOUND_TXT));
-    next(err);
+    if (err.name === CAST_ERROR_NAME) return next(new BadRequestError(BAD_REQUEST_TXT));
+    return next(err);
   }
-  return next();
 }
 
 /**
@@ -50,10 +49,15 @@ export async function getUser(req, res, next) {
  * @returns {{ user: { name: string, email: string } }} user instance
  */
 export async function updateUser(req, res, next) {
+  let userEntry;
   try {
     const { user } = req.cookies;
     const { name, email } = req.body;
-    const userEntry = await User.findByIdAndUpdate(
+
+    userEntry = await User.findOne({ email });
+    if (userEntry.id !== user._id) throw new ConflictError(EMAIL_EXIST_TXT);
+
+    userEntry = await User.findByIdAndUpdate(
       user._id,
       { name, email },
       { new: true, runValidators: true },
@@ -61,9 +65,8 @@ export async function updateUser(req, res, next) {
     if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(userEntry.trim());
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }
 
 /**
@@ -94,9 +97,8 @@ export async function login(req, res, next) {
       })
       .send(userEntry);
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }
 
 export async function logout(req, res, next) {
@@ -104,7 +106,6 @@ export async function logout(req, res, next) {
     return res.clearCookie('auth').clearCookie('user')
       .send({ message: LOGGED_OUT });
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }

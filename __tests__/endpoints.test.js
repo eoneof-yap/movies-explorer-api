@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import supertest from 'supertest';
 import process from 'process';
 import dotenv from 'dotenv';

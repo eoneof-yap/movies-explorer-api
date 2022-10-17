@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import winston from 'winston';
 import expressWinston from 'express-winston';
 
@@ -50,8 +48,10 @@ export const logErrosToConsole = expressWinston.errorLogger({
   ),
 });
 
-const timeStamp = () => new Date().toLocaleString();
-
-export const logEventsToConsole = (message) => {
-  console.log(`${timeStamp()} ${message}`);
-};
+export const logEventsToConsole = winston.createLogger({
+  transports: [new winston.transports.Console()],
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.simple(),
+  ),
+});

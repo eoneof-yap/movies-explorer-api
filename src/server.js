@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import app from './app.js';
 
 import {
-  SERVER_ERROR, SERVER_ERROR_TXT, runtimeDb, runtimePort, runtimeMode, devMode, prodMode,
+  SERVER_ERROR, SERVER_ERROR_TXT, runtimeDb, runtimePort, runtimeMode,
   UNCAUGHT_EXCEPTION, UNHANDLED_ERROR_NAME,
 } from './utils/constants.js';
 
@@ -20,17 +20,17 @@ const { NODE_ENV = runtimeMode, PORT = runtimePort, DB_PATH = runtimeDb } = proc
   try {
     await mongoose.connect(DB_PATH);
     await app.listen(PORT, () => {
-      if (NODE_ENV === prodMode) {
+      if (NODE_ENV === 'production') {
         logEventsToFile.info(`Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"`);
-      } else if (NODE_ENV === devMode) {
-        logEventsToConsole(`Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"`);
+      } else if (NODE_ENV === 'development') {
+        logEventsToConsole.log({ level: 'info', message: `Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"` });
       }
     });
   } catch (err) {
-    if (NODE_ENV === prodMode) {
+    if (NODE_ENV === 'production') {
       logEventsToFile.info(`Сервер не запустился ${err}`);
-    } else if (NODE_ENV === devMode) {
-      logEventsToConsole(`Сервер не запустился ${err}`);
+    } else if (NODE_ENV === 'development') {
+      logEventsToConsole.log({ level: 'info', message: `Сервер не запустился ${err}` });
     }
   }
 })();
@@ -38,7 +38,7 @@ const { NODE_ENV = runtimeMode, PORT = runtimePort, DB_PATH = runtimeDb } = proc
 app.use(globalErrorHandler);
 
 process.on(UNCAUGHT_EXCEPTION, (err, origin) => {
-  logEventsToConsole(`${UNHANDLED_ERROR_NAME} ${origin}" "${err.name}" "${err.message}" "${err.stack}`);
+  logEventsToConsole.log({ level: 'info', message: `${UNHANDLED_ERROR_NAME} ${origin}" "${err.name}" "${err.message}" "${err.stack}` });
   app.use((res) => {
     res.status(SERVER_ERROR).send(SERVER_ERROR_TXT);
   });

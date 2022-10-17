@@ -29,9 +29,8 @@ export async function createMovie(req, res, next) {
     const movieEntry = await Movie.createEntry({ owner: user._id, ...movieProps });
     return res.status(CREATED).send({ message: MOVIE_ADDED_TXT, movieEntry });
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }
 
 /**
@@ -52,9 +51,8 @@ export async function getMovies(req, res, next) {
     });
     return res.send(arr);
   } catch (err) {
-    next(err);
+    return next(err);
   }
-  return next();
 }
 
 /**
@@ -76,7 +74,6 @@ export async function deleteMovieById(req, res, next) {
     return res.send({ message: MOVIE_DELETED_TXT, movieEntry });
   } catch (err) {
     if (err.name === CAST_ERROR_NAME) next(new BadRequestError(WRONG_ID_TXT));
-    next(err);
+    return next(err);
   }
-  return next();
 }

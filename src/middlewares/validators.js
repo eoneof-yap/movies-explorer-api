@@ -13,12 +13,6 @@ const validUserName = Joi.string().required().min(2).max(30);
 const validEmail = Joi.string().required().email();
 const validPassword = Joi.string().required();
 
-export const validateId = celebrate({
-  body: Joi.object().keys({
-    id: validUserId,
-  }),
-});
-
 export const validateRegister = celebrate({
   body: Joi.object().keys({
     name: validUserName,

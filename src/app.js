@@ -18,7 +18,6 @@ import {
 
 import limiter from './utils/rateLimit.js';
 import routes from './routes/index.js';
-import notFound from './controllers/notFound.controller.js';
 
 dotenv.config();
 const app = express();
@@ -48,7 +47,5 @@ if (NODE_ENV === prodMode) {
 } else if (NODE_ENV === devMode) {
   app.use(logErrosToConsole);
 }
-
-app.all('*', notFound); // handle global 404 error
 
 export default app; // to server.js

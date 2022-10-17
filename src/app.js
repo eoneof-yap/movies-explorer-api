@@ -18,6 +18,7 @@ import {
 
 import limiter from './utils/rateLimit.js';
 import routes from './routes/index.js';
+import notFoundRoute from './routes/notFound.route.js';
 
 dotenv.config();
 const app = express();
@@ -41,6 +42,8 @@ app.use(cookieParser(SECRET_KEY));
 app.use(routes); // main routes
 
 app.use(errors()); // catch Joi validation errors
+
+routes.use(notFoundRoute);
 
 if (NODE_ENV === prodMode) {
   app.use(logErrorsToFile);

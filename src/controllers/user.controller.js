@@ -2,12 +2,13 @@ import userModel from '../models/user.model.js';
 import {
   CREATED, USER_NOT_FOUND_TXT, KEY_EXPIRATION_TIMEOUT, LOGGED_OUT,
   WRONG_CREDENTIALS_TXT, BAD_REQUEST_TXT, SIGNUP_SUCCESSFUL,
-  CAST_ERROR_NAME,
+  CAST_ERROR_NAME, EMAIL_EXIST_TXT,
 } from '../utils/constants.js';
 
 import NotFoundError from '../errors/NotFoundError.js';
 import UnauthorizedError from '../errors/UnauthorizedError.js';
 import BadRequestError from '../errors/BadRequestError.js';
+import ConflictError from '../errors/ConflictError.js';
 
 const User = userModel;
 
@@ -50,10 +51,15 @@ export async function getUser(req, res, next) {
  * @returns {{ user: { name: string, email: string } }} user instance
  */
 export async function updateUser(req, res, next) {
+  let userEntry;
   try {
     const { user } = req.cookies;
     const { name, email } = req.body;
-    const userEntry = await User.findByIdAndUpdate(
+
+    userEntry = await User.findOne({ email });
+    if (userEntry._id !== user._id) throw new ConflictError(EMAIL_EXIST_TXT);
+
+    userEntry = await User.findByIdAndUpdate(
       user._id,
       { name, email },
       { new: true, runValidators: true },

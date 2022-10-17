@@ -23,10 +23,6 @@ dotenv.config();
 const app = express();
 const { NODE_ENV = runtimeMode, SECRET_KEY = runtimeKey } = process.env;
 
-app.use(helmet.hidePoweredBy());
-app.use(limiter);
-app.use(cors());
-
 if (NODE_ENV === prodMode) {
   app.use(logRequestsToFile);
 } else if (NODE_ENV === testMode) {
@@ -34,6 +30,10 @@ if (NODE_ENV === prodMode) {
 } else {
   app.use(logRequestsToConsole);
 }
+
+app.use(helmet.hidePoweredBy());
+app.use(limiter);
+app.use(cors());
 
 app.use(express.json()); // body-parser is bundled with Express >4.16
 app.use(cookieParser(SECRET_KEY));

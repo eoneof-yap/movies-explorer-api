@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import isURL from 'validator/lib/isURL.js';
 
-import { BAD_REQUEST_TXT } from '../utils/constants.js';
+import { BAD_REQUEST_TXT, CAST_ERROR_NAME, VALIDATION_ERROR } from '../utils/constants.js';
 
 import BadRequestError from '../errors/BadRequestError.js';
 
@@ -76,9 +76,10 @@ movieSchema.statics.createEntry = async function createEntry({ owner, ...moviePr
   let movieEntry;
   try {
     movieEntry = await this.create({ owner, ...movieProps });
-    if (!movieEntry) throw new BadRequestError(BAD_REQUEST_TXT);
   } catch (err) {
-    throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === CAST_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
+    throw new Error(err);
   }
   return movieEntry.trim();
 };
@@ -87,9 +88,10 @@ movieSchema.statics.deleteEntry = async function deleteEntry(id) {
   let movieEntry;
   try {
     movieEntry = await this.findByIdAndDelete(id);
-    if (!movieEntry) throw new BadRequestError(BAD_REQUEST_TXT);
   } catch (err) {
-    throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === CAST_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
+    throw new Error(err);
   }
   return movieEntry.trim();
 };

@@ -37,10 +37,10 @@ export async function getUser(req, res, next) {
   try {
     const { user } = req.cookies;
     userEntry = await User.findById(user._id);
+    if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(userEntry.trim());
   } catch (err) {
-    if (!userEntry) next(new NotFoundError(USER_NOT_FOUND_TXT));
-    if (err.name === CAST_ERROR_NAME) next(new NotFoundError(USER_NOT_FOUND_TXT));
+    if (err.name === CAST_ERROR_NAME) next(new BadRequestError(BAD_REQUEST_TXT));
     next(err);
   }
   return next();
@@ -57,7 +57,7 @@ export async function updateUser(req, res, next) {
     const { name, email } = req.body;
 
     userEntry = await User.findOne({ email });
-    if (userEntry._id !== user._id) throw new ConflictError(EMAIL_EXIST_TXT);
+    if (userEntry.id !== user._id) throw new ConflictError(EMAIL_EXIST_TXT);
 
     userEntry = await User.findByIdAndUpdate(
       user._id,

@@ -3,12 +3,13 @@ import isEmail from 'validator/lib/isEmail.js';
 import bcrypt from 'bcryptjs';
 
 import {
-  USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT, SALT_ROUNDS,
-  EMAIL_EXIST_TXT, DB_DUPLICATE_KEY_CODE,
+  USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT, SALT_ROUNDS, VALIDATION_ERROR,
+  EMAIL_EXIST_TXT, DB_DUPLICATE_KEY_CODE, CAST_ERROR_NAME, BAD_REQUEST_TXT,
 } from '../utils/constants.js';
 
-import ForbiddenError from '../errors/ForbiddenError.js';
+import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
+import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -49,7 +50,10 @@ userSchema.statics.createEntry = async function createEntry(name, email, passwor
     return userEntry.trim();
   } catch (err) {
     if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(EMAIL_EXIST_TXT);
-    throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
+    if (err.name === CAST_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
+
+    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
+    throw new Error(err);
   }
 };
 
@@ -64,7 +68,9 @@ userSchema.statics.authorize = async function authorize(email, password) {
 
     return userEntry.trim();
   } catch (err) {
-    throw new ForbiddenError(WRONG_CREDENTIALS_TXT);
+    if (err.name === CAST_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
+    if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
+    throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
   }
 };
 

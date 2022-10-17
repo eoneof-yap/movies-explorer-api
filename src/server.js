@@ -23,14 +23,14 @@ const { NODE_ENV = runtimeMode, PORT = runtimePort, DB_PATH = runtimeDb } = proc
       if (NODE_ENV === prodMode) {
         logEventsToFile.info(`Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"`);
       } else if (NODE_ENV === devMode) {
-        logEventsToConsole(`Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"`);
+        logEventsToConsole.log({ level: 'info', message: `Сервер запущен на ${PORT} порту в режиме "${NODE_ENV}"` });
       }
     });
   } catch (err) {
     if (NODE_ENV === prodMode) {
       logEventsToFile.info(`Сервер не запустился ${err}`);
     } else if (NODE_ENV === devMode) {
-      logEventsToConsole(`Сервер не запустился ${err}`);
+      logEventsToConsole.log({ level: 'info', message: `Сервер не запустился ${err}` });
     }
   }
 })();
@@ -38,7 +38,7 @@ const { NODE_ENV = runtimeMode, PORT = runtimePort, DB_PATH = runtimeDb } = proc
 app.use(globalErrorHandler);
 
 process.on(UNCAUGHT_EXCEPTION, (err, origin) => {
-  logEventsToConsole(`${UNHANDLED_ERROR_NAME} ${origin}" "${err.name}" "${err.message}" "${err.stack}`);
+  logEventsToConsole.log({ level: 'info', message: `${UNHANDLED_ERROR_NAME} ${origin}" "${err.name}" "${err.message}" "${err.stack}` });
   app.use((res) => {
     res.status(SERVER_ERROR).send(SERVER_ERROR_TXT);
   });

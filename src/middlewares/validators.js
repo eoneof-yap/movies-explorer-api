@@ -11,7 +11,7 @@ const validnumber = Joi.number();
 // user data config
 const validUserName = Joi.string().required().min(2).max(30);
 const validEmail = Joi.string().required().email();
-const validPassword = Joi.string().required().min(8);
+const validPassword = Joi.string().required();
 
 export const validateId = celebrate({
   body: Joi.object().keys({

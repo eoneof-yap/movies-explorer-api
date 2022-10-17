@@ -3,7 +3,7 @@ import isEmail from 'validator/lib/isEmail.js';
 import bcrypt from 'bcryptjs';
 
 import {
-  USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT, SALT_ROUNDS, PASSWORD_MIN_TXT,
+  USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT, SALT_ROUNDS,
   EMAIL_EXIST_TXT, DB_DUPLICATE_KEY_CODE,
 } from '../utils/constants.js';
 
@@ -23,7 +23,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     select: false,
-    minlength: [8, PASSWORD_MIN_TXT],
   },
   name: {
     type: String,

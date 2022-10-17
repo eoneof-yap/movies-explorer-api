@@ -8,7 +8,6 @@ export const CONFLICT = 409;
 export const SERVER_ERROR = 500;
 
 // schemas strings
-export const PASSWORD_MIN_TXT = 'пароль должен быть не менее восьми символов';
 export const USER_NAME_MAX_TXT = 'имя не должно быть длиннее 30 символов';
 export const USER_NAME_MIN_TXT = 'имя должно быть длиной не менее двух символов';
 

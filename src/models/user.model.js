@@ -48,10 +48,9 @@ userSchema.methods.trim = function trim() {
 };
 
 userSchema.statics.createEntry = async function createEntry(name, email, password) {
-  let userEntry;
   try {
     const hash = await bcrypt.hash(password, SALT_ROUNDS);
-    userEntry = await this.create({ name, email, password: hash });
+    const userEntry = await this.create({ name, email, password: hash });
     if (!userEntry) return null;
 
     return userEntry.trim();
@@ -65,9 +64,8 @@ userSchema.statics.createEntry = async function createEntry(name, email, passwor
 };
 
 userSchema.statics.authorize = async function authorize(email, password) {
-  let userEntry;
   try {
-    userEntry = await this.findOne({ email }).select('+password');
+    const userEntry = await this.findOne({ email }).select('+password');
     if (!userEntry) return { token: null, userEntry: null };
 
     const match = await bcrypt.compare(password, userEntry.password);

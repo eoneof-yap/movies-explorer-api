@@ -94,8 +94,7 @@ export async function login(req, res, next) {
 
 export async function logout(req, res, next) {
   try {
-    return res.clearCookie('auth').clearCookie('user')
-      .send({ message: LOGGED_OUT });
+    return res.clearCookie('auth').send({ message: LOGGED_OUT });
   } catch (err) {
     return next(err);
   }

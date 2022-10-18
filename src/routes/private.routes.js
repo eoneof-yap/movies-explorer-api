@@ -4,7 +4,7 @@ import {
   CURRENT_USER_PATH, MOVIES_PATH, MOVIE_ID_PATH, LOGOUT_PATH,
 } from '../utils/constants.js';
 
-import { validateUpdate, validateMovieInfo } from '../middlewares/validators.js';
+import { validateUpdate, validateMovieInfo, validateId } from '../middlewares/validators.js';
 import { getUser, updateUser, logout } from '../controllers/user.controller.js';
 import { createMovie, getMovies, deleteMovieById } from '../controllers/movies.controller.js';
 
@@ -18,6 +18,6 @@ privateRouter.get(CURRENT_USER_PATH, getUser)
 // movies
 privateRouter.get(MOVIES_PATH, getMovies)
   .post(MOVIES_PATH, validateMovieInfo, createMovie)
-  .delete(MOVIE_ID_PATH, deleteMovieById);
+  .delete(MOVIE_ID_PATH, validateId, deleteMovieById);
 
 export default privateRouter;

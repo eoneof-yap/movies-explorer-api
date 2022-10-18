@@ -3,13 +3,12 @@ import isEmail from 'validator/lib/isEmail.js';
 import bcrypt from 'bcryptjs';
 
 import {
-  USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, WRONG_CREDENTIALS_TXT, SALT_ROUNDS, VALIDATION_ERROR,
+  USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, SALT_ROUNDS, VALIDATION_ERROR,
   EMAIL_EXIST_TXT, DB_DUPLICATE_KEY_CODE, CAST_ERROR_NAME, BAD_REQUEST_TXT,
 } from '../utils/constants.js';
 
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
-import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -70,7 +69,7 @@ userSchema.statics.authorize = async function authorize(email, password) {
   } catch (err) {
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
-    throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
+    throw new Error(err);
   }
 };
 

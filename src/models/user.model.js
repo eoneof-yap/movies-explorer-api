@@ -57,7 +57,6 @@ userSchema.statics.createEntry = async function createEntry(name, email, passwor
   } catch (err) {
     if (err.code === DB_DUPLICATE_KEY_CODE) throw new ConflictError(EMAIL_EXIST_TXT);
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
-
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     throw new Error(err);
   }

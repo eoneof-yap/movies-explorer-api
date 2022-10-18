@@ -19,6 +19,7 @@ const User = userModel;
 export async function createUser(req, res, next) {
   try {
     const { name, email, password } = req.body;
+
     const userEntry = await User.createEntry(name, email, password);
     if (!userEntry) throw new BadRequestError(BAD_REQUEST_TXT);
     return res.status(CREATED).send({ message: SIGNUP_SUCCESSFUL });
@@ -32,11 +33,12 @@ export async function createUser(req, res, next) {
  * @returns {{ user: { _id: string, name: string, email: string } }} user instance
  */
 export async function getUser(req, res, next) {
-  let userEntry;
   try {
     const { user } = req;
-    userEntry = await User.findById(user._id);
+
+    const userEntry = await User.findById(user._id);
     if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
+
     return res.send(userEntry.trim());
   } catch (err) {
     if (err.name === CAST_ERROR_NAME) return next(new BadRequestError(BAD_REQUEST_TXT));
@@ -64,6 +66,7 @@ export async function updateUser(req, res, next) {
       if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
     }
     if (userEntry.id !== user._id) throw new ConflictError(EMAIL_EXIST_TXT);
+
     return res.send(userEntry.trim());
   } catch (err) {
     return next(err);
@@ -81,11 +84,9 @@ export async function login(req, res, next) {
     // custom method
     const { token, userEntry } = await User.authorize(email, password);
     if (!token || !userEntry) throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
+
     return res.cookie('auth', token, {
-      maxAge: JWT_EXPIRATION_TIMEOUT,
-      httpOnly: true,
-      sameSite: true,
-      signed: true,
+      maxAge: JWT_EXPIRATION_TIMEOUT, httpOnly: true, sameSite: true, signed: true,
     }).send(userEntry);
   } catch (err) {
     return next(err);

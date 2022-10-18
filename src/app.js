@@ -19,7 +19,7 @@ import routes from './routes/index.js';
 
 dotenv.config();
 const app = express();
-const { NODE_ENV = runtimeMode, SECRET_KEY = runtimeKey } = process.env;
+const { NODE_ENV = runtimeMode, JWT_SECRET = runtimeKey } = process.env;
 
 if (NODE_ENV === 'production') {
   app.use(logRequestsToFile);
@@ -34,7 +34,7 @@ app.use(limiter);
 app.use(cors());
 
 app.use(express.json()); // body-parser is bundled with Express >4.16
-app.use(cookieParser(SECRET_KEY));
+app.use(cookieParser(JWT_SECRET));
 
 app.use(routes); // main routes
 

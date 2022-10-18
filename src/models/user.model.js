@@ -1,3 +1,5 @@
+import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 import isEmail from 'validator/lib/isEmail.js';
 import bcrypt from 'bcryptjs';
@@ -5,10 +7,16 @@ import bcrypt from 'bcryptjs';
 import {
   USER_NAME_MAX_TXT, USER_NAME_MIN_TXT, SALT_ROUNDS, VALIDATION_ERROR,
   EMAIL_EXIST_TXT, DB_DUPLICATE_KEY_CODE, CAST_ERROR_NAME, BAD_REQUEST_TXT,
+  runtimeKey, JWT_EXPIRATION_TIMEOUT, WRONG_CREDENTIALS_TXT,
 } from '../utils/constants.js';
 
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
+import UnauthorizedError from '../errors/UnauthorizedError.js';
+
+dotenv.config();
+
+const { JWT_SECRET = runtimeKey } = process.env;
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -60,12 +68,17 @@ userSchema.statics.authorize = async function authorize(email, password) {
   let userEntry;
   try {
     userEntry = await this.findOne({ email }).select('+password');
-    if (!userEntry) return null;
+    if (!userEntry) return { token: null, userEntry: null };
 
     const match = await bcrypt.compare(password, userEntry.password);
-    if (!match) return null;
+    if (!match) return { token: null, userEntry: null };
 
-    return userEntry.trim();
+    const token = jwt.sign({ _id: userEntry._id }, JWT_SECRET, {
+      expiresIn: JWT_EXPIRATION_TIMEOUT,
+    });
+    if (!token) throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
+
+    return { token, userEntry: userEntry.trim() };
   } catch (err) {
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);

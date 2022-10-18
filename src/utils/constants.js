@@ -52,7 +52,7 @@ export const UNCAUGHT_EXCEPTION = 'uncaughtException';
 export const UNHANDLED_ERROR_NAME = 'Необработанная ошибка:';
 
 // misc
-export const KEY_EXPIRATION_TIMEOUT = 3600000 * 24 * 7; // 7 days
+export const JWT_EXPIRATION_TIMEOUT = 3600000 * 24 * 7; // 7 days
 export const SALT_ROUNDS = 10;
 
 // dev

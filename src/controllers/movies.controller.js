@@ -18,7 +18,7 @@ const Movie = movieModel;
  */
 export async function createMovie(req, res, next) {
   try {
-    const { user } = req.cookies;
+    const { user } = req;
     const { ...movieProps } = req.body;
     const { movieId } = movieProps;
 
@@ -39,7 +39,7 @@ export async function createMovie(req, res, next) {
  */
 export async function getMovies(req, res, next) {
   try {
-    const { user } = req.cookies;
+    const { user } = req;
     const moviesList = await Movie.find({ owner: user._id });
     if (moviesList.length === 0) return res.send({ message: MOVIES_LIST_EMPTY });
 
@@ -62,7 +62,7 @@ export async function getMovies(req, res, next) {
 export async function deleteMovieById(req, res, next) {
   try {
     const { id } = req.params;
-    const { user } = req.cookies;
+    const { user } = req;
     let movieEntry = await Movie.findById(id);
     if (!movieEntry) throw new NotFoundError(MOVIE_NOT_FOUND_TXT);
 

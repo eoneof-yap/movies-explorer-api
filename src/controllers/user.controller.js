@@ -1,14 +1,14 @@
 import userModel from '../models/user.model.js';
 import {
-  CREATED, USER_NOT_FOUND_TXT, KEY_EXPIRATION_TIMEOUT, LOGGED_OUT,
-  WRONG_CREDENTIALS_TXT, BAD_REQUEST_TXT, SIGNUP_SUCCESSFUL,
-  CAST_ERROR_NAME, EMAIL_EXIST_TXT,
+  CREATED, USER_NOT_FOUND_TXT, JWT_EXPIRATION_TIMEOUT, LOGGED_OUT,
+  BAD_REQUEST_TXT, SIGNUP_SUCCESSFUL,
+  CAST_ERROR_NAME, EMAIL_EXIST_TXT, WRONG_CREDENTIALS_TXT,
 } from '../utils/constants.js';
 
 import NotFoundError from '../errors/NotFoundError.js';
-import UnauthorizedError from '../errors/UnauthorizedError.js';
 import BadRequestError from '../errors/BadRequestError.js';
 import ConflictError from '../errors/ConflictError.js';
+import UnauthorizedError from '../errors/UnauthorizedError.js';
 
 const User = userModel;
 
@@ -34,7 +34,7 @@ export async function createUser(req, res, next) {
 export async function getUser(req, res, next) {
   let userEntry;
   try {
-    const { user } = req.cookies;
+    const { user } = req;
     userEntry = await User.findById(user._id);
     if (!userEntry) throw new NotFoundError(USER_NOT_FOUND_TXT);
     return res.send(userEntry.trim());
@@ -51,7 +51,7 @@ export async function getUser(req, res, next) {
 export async function updateUser(req, res, next) {
   let userEntry;
   try {
-    const { user } = req.cookies;
+    const { user } = req;
     const { name, email } = req.body;
 
     userEntry = await User.findOne({ email });
@@ -79,24 +79,14 @@ export async function login(req, res, next) {
     const { email, password } = req.body;
 
     // custom method
-    const userEntry = await User.authorize(email, password);
-    if (!userEntry) {
-      res.clearCookie('auth').clearCookie('user'); // clear cookies if any
-      throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
-    }
-    return res.cookie('auth', userEntry._id, {
-      maxAge: KEY_EXPIRATION_TIMEOUT,
+    const { token, userEntry } = await User.authorize(email, password);
+    if (!token || !userEntry) throw new UnauthorizedError(WRONG_CREDENTIALS_TXT);
+    return res.cookie('auth', token, {
+      maxAge: JWT_EXPIRATION_TIMEOUT,
       httpOnly: true,
       sameSite: true,
       signed: true,
-    })
-      .cookie('user', userEntry, {
-        maxAge: KEY_EXPIRATION_TIMEOUT,
-        httpOnly: true,
-        sameSite: true,
-        signed: false,
-      })
-      .send(userEntry);
+    }).send(userEntry);
   } catch (err) {
     return next(err);
   }

@@ -1,0 +1,22 @@
+# node
+**/node_modules
+
+# editors
+**/.vscode
+**/.idea
+
+# logs
+**/logs
+**.log
+
+# build
+**/build
+**/dist
+
+# system
+**/.DS_Store
+**Thumbs.db
+**desktop.ini
+
+#  env
+**.env

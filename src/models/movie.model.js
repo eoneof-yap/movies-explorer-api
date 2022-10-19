@@ -73,27 +73,29 @@ movieSchema.methods.trim = function trim() {
 };
 
 movieSchema.statics.createEntry = async function createEntry({ owner, ...movieProps }) {
-  let movieEntry;
   try {
-    movieEntry = await this.create({ owner, ...movieProps });
+    const movieEntry = await this.create({ owner, ...movieProps });
+    if (!movieEntry) return null;
+
+    return movieEntry.trim();
   } catch (err) {
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     throw new Error(err);
   }
-  return movieEntry.trim();
 };
 
 movieSchema.statics.deleteEntry = async function deleteEntry(id) {
-  let movieEntry;
   try {
-    movieEntry = await this.findByIdAndDelete(id);
+    const movieEntry = await this.findByIdAndDelete(id);
+    if (!movieEntry) return null;
+
+    return movieEntry.trim();
   } catch (err) {
     if (err.name === CAST_ERROR_NAME) throw new BadRequestError(BAD_REQUEST_TXT);
     if (err.name === VALIDATION_ERROR) throw new BadRequestError(BAD_REQUEST_TXT);
     throw new Error(err);
   }
-  return movieEntry.trim();
 };
 
 export default mongoose.model('movie', movieSchema);

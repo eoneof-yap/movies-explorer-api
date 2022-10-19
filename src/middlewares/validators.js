@@ -5,7 +5,8 @@ const validUrl = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]
 const validRequiredString = Joi.string().required();
 const validMovieId = Joi.number().required();
 const validRequiredNumber = Joi.number().required();
-const validId = Joi.string().hex().length(24).alphanum().required();
+const validId = Joi.required().string().alphanum().length(24)
+  .hex();
 
 export const validateId = celebrate({
   params: Joi.object({

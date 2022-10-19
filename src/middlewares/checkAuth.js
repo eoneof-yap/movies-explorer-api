@@ -19,6 +19,7 @@ export default async function checkAuth(req, res, next) {
 
     const payload = jwt.verify(auth, JWT_SECRET);
     req.user = payload;
+
     return next();
   } catch (err) {
     return next(err);

@@ -34,12 +34,13 @@ export async function createMovie(req, res, next) {
 }
 
 /**
- * Get current movie info
+ * Get movies list for current user
  * @returns {[{}]} an array of movies
  */
 export async function getMovies(req, res, next) {
   try {
     const { user } = req;
+
     const moviesList = await Movie.find({ owner: user._id });
     if (moviesList.length === 0) return res.send({ message: MOVIES_LIST_EMPTY });
 
@@ -63,6 +64,7 @@ export async function deleteMovieById(req, res, next) {
   try {
     const { id } = req.params;
     const { user } = req;
+
     let movieEntry = await Movie.findById(id);
     if (!movieEntry) throw new NotFoundError(MOVIE_NOT_FOUND_TXT);
 

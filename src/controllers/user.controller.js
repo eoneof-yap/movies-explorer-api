@@ -22,6 +22,7 @@ export async function createUser(req, res, next) {
 
     const userEntry = await User.createEntry(name, email, password);
     if (!userEntry) throw new BadRequestError(BAD_REQUEST_TXT);
+
     return res.status(CREATED).send({ message: SIGNUP_SUCCESSFUL });
   } catch (err) {
     return next(err);
